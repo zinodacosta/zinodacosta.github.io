@@ -45,10 +45,22 @@ async function fetchDataFromApi(url) {
     }
 }
 
+// Funktion: Aktuelles Datum in Timestamp umwandeln
+function getCurrentTimestamp() {
+    const now = new Date();
+    return now.getTime(); // Gibt den aktuellen Timestamp in Millisekunden zurück
+}
+
 // Endpoint: API-Daten bereitstellen
 app.get('/data', async (req, res) => {
     try {
-        const response = await fetch(apiUrl); // API-URL aus config.txt
+        // Erstelle die API-URL mit dem aktuellen Timestamp
+        let currentTimestamp = new Date().getTime();
+        let dynamicApiUrl = `https://www.smard.de/app/chart_data/1223/DE/1223_DE_hour_1627855200000.json`;
+
+        console.log('Aktuelle API-URL:', dynamicApiUrl);
+
+        const response = await fetch(dynamicApiUrl); // API-URL mit dynamischem Timestamp
         if (!response.ok) {
             throw new Error(`API-Fehler: ${response.statusText}`);
         }
@@ -71,9 +83,6 @@ app.get('/data', async (req, res) => {
         res.status(500).json({ error: 'Fehler beim Abrufen der Daten' });
     }
 });
-
-
-
 
 // Index-Seite bereitstellen
 app.get('/', (req, res) => {
