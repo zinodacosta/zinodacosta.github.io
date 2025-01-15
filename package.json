@@ -1,0 +1,16 @@
+{
+  "name": "protonik-hydrogen-emission",
+  "version": "1.0.0",
+  "author": "Zino da Costa",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "chartjs-plugin-zoom": "^2.1.0",
+    "express": "^4.21.1",
+    "jsdom": "^25.0.1",
+    "node-fetch": "^3.3.2"
+  },
+  "type": "module"
+}
