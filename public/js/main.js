@@ -22,7 +22,7 @@ async function fetchData() {
         console.log('Received data:', data);
 
         // Update the chart with the new time range
-        createChart('myChart', data.labels, data.values, 'Braunkohle', 'rgb(75, 192, 192)');
+        createChart('myChart', data.labels, data.values, 'Wholesale price', 'rgb(75, 192, 192)');
     } catch (error) {
         console.error('Error fetching data:', error);
     }
@@ -47,15 +47,11 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
             responsive: true,
             scales: {
                 x: {
-                    title: {
-                        display: true,
-                        text: 'Zeitstempel'
-                    }
                 },
                 y: {
                     title: {
                         display: true,
-                        text: 'Erzeugung (kWh)'
+                        text: '€/MWh'
                     },
                     beginAtZero: true
                 }

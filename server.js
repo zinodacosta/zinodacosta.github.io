@@ -29,6 +29,19 @@ try {
 // Statische Dateien bereitstellen
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Funktion: Nächsten Tag um 00:00 UTC in Timestamp umwandeln
+function getNextDayTimestamp() {
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);  // Setze die Uhrzeit auf 00:00 UTC
+    today.setUTCDate(today.getUTCDate() + 0);  // Setze das Datum auf den nächsten Tag
+    const nextDayTimestamp = today.getTime();  // Gib den Timestamp in Millisekunden zurück
+    const adjustedTimestamp = nextDayTimestamp - 435600000; // Addiere die benötigte Zeit (522000000 ms)
+    console.log(nextDayTimestamp);
+    console.log(adjustedTimestamp);
+
+    return adjustedTimestamp;
+}
+
 // Funktion: Daten von der API abrufen
 async function fetchDataFromApi(url) {
     try {
@@ -45,19 +58,14 @@ async function fetchDataFromApi(url) {
     }
 }
 
-// Funktion: Aktuelles Datum in Timestamp umwandeln
-function getCurrentTimestamp() {
-    const now = new Date();
-    return now.getTime(); // Gibt den aktuellen Timestamp in Millisekunden zurück
-}
-
 // Endpoint: API-Daten bereitstellen
 app.get('/data', async (req, res) => {
     try {
-        // Erstelle die API-URL mit dem aktuellen Timestamp
-        let currentTimestamp = new Date().getTime();
-        let dynamicApiUrl = `https://www.smard.de/app/chart_data/1223/DE/1223_DE_hour_1627855200000.json`;
+        // Berechne den Timestamp für den nächsten Tag um 00:00 UTC
+        const nextTimestamp = getNextDayTimestamp();
 
+        // Erstelle die API-URL mit dem berechneten Timestamp
+        const dynamicApiUrl = `https://www.smard.de/app/chart_data/4169/DE/4169_DE_hour_${nextTimestamp}.json`;
         console.log('Aktuelle API-URL:', dynamicApiUrl);
 
         const response = await fetch(dynamicApiUrl); // API-URL mit dynamischem Timestamp
