@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protonik</title>
+    <head>
+        <!-- Link to Google Fonts for Roboto -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+        <!-- Link to your custom CSS -->
+        <link rel="stylesheet" href="css/styles.css">
+        
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Protonik</title>
     
-    <!-- Chart.js Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
-
-</head>
+        <!-- Chart.js Libraries -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0"></script>
+        <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+    </head>
 <body>
-    <h1>Energy Data Visualization</h1>
+    <h1>Protonik Hydrogen Dashboard</h1>
 
     <!-- Graph Type Selector -->
     <label for="graph-selector">Select Graph Type:</label>
@@ -29,7 +35,7 @@
     <button id="zoom-out">Zoom Out</button>
     
     <!-- Canvas for Chart -->
-    <canvas id="myChart" width="400" height="200"></canvas> 
+    <canvas id="myChart" width="400" height="150"></canvas> 
 
     <!-- OpenAPI Documentation -->
     <div id="openapi"></div>

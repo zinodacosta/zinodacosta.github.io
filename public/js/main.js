@@ -39,15 +39,28 @@ async function fetchData() {
             myChartInstance.destroy();
         }
 
-        // Update the chart with the new data
-        createChart('myChart', data.labels, data.values, graphType, 'rgb(75, 192, 192)');
+        // Determine the color and Y-axis label based on the selected graph type
+        let borderColor, yAxisLabel;
+        if (graphType === 'wholesalePrice') {
+            borderColor = 'rgb(39, 99, 158)';  // Darker blue for wholesalePrice
+            yAxisLabel = 'Price (€/MWh)';
+        } else if (graphType === 'actualelectricityconsumption') {
+            borderColor = 'rgb(255, 0, 0)';  // Lighter blue for electricity consumption
+            yAxisLabel = 'Electricity Consumption (MWh)';
+        } else {
+            borderColor = 'rgb(75, 192, 192)';  // Default color
+            yAxisLabel = 'Value';
+        }
+
+        // Update the chart with the new data and Y-axis label
+        createChart('myChart', data.labels, data.values, graphType, borderColor, yAxisLabel);
     } catch (error) {
         console.error('Error fetching data:', error);
     }
 }
 
-// Function to create a chart
-function createChart(canvasId, labels, values, labelName, borderColor) {
+//Create chart
+function createChart(canvasId, labels, values, labelName, borderColor, yAxisLabel) {
     const ctx = document.getElementById(canvasId).getContext('2d');
     
     myChartInstance = new Chart(ctx, {
@@ -64,12 +77,17 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
         },
         options: {
             responsive: true,
+            plugins: {
+                legend: {
+                    display: false  // Disable the legend
+                }
+            },
             scales: {
                 x: {},
                 y: {
                     title: {
                         display: true,
-                        text: '€/MWh'
+                        text: yAxisLabel  // Dynamically set the Y-axis label
                     },
                     beginAtZero: true
                 }
