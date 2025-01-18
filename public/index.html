@@ -23,20 +23,31 @@
     <h1>Protonik Hydrogen Dashboard</h1>
 
     <!-- Graph Type Selector -->
-    <label for="graph-selector">Select Graph Type:</label>
+   <label for="graph-selector">Select Graph Type:</label>
     <select id="graph-selector">
         <option value="wholesalePrice">Wholesale Price</option>
-        <option value="actualelectricityconsumption">Actual Electricity Consumption</option>
-
+        <option value="browncoal">Electricity Generation: Brown Coal</option>
+        <option value="biomass">Electricity Generation: Biomass</option>
+        <option value="windoffshore">Electricity Generation: Wind Off-Shore Coal</option>
+        <option value="windonshore">Electricity Generation: Wind On-Shore Coal</option>
+        <option value="hydroelectric">Electricity Generation: Hydroelectric</option>
+        <option value="naturalgas">Electricity Generation: Natural Gas</option>
+        <option value="blackcoal">Electricity Generation: Black Coal</option>
+        <option value="photovoltaik">Electricity Generation: Photovoltaik</option>
+        <option value="otherconventional">Electricity Generation: Other Conventional</option>
+        <option value="otherrenewable">Electricity Generation: Other Renewable</option>
         <!-- Add more options as needed -->
     </select>
 
-    <!-- Zoom Out Button -->
-    <button id="zoom-out">Zoom Out</button>
     
     <!-- Canvas for Chart -->
-    <canvas id="myChart" width="400" height="150"></canvas> 
-
+    <div>
+        <canvas id="myChart" width="400" height="200"></canvas>
+    </div>
+<div>
+    <h2 id="chart2-title">Actual Electricity Consumption</h2>
+    <canvas id="myChart2" width="400" height="200"></canvas>
+</div>
     <!-- OpenAPI Documentation -->
     <div id="openapi"></div>
 

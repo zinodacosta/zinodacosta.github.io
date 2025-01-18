@@ -4,122 +4,134 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
 
-// Korrigiere __dirname für ES-Module
+// Correct `__dirname` for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = 3000;
 
-// Pfad zur config.txt
+// Path to `config.txt`
 const configPath = path.join(__dirname, 'config.txt');
 
-// Pfad zur JSON-Datei mit den Graph-Identifiers
-const graphIdentifiersPath = path.join(__dirname, 'graphIdentifiers.json');
+// Path to the JSON file with graph identifiers
+const graphIdentifiersPath = path.join(__dirname, 'public', 'graphIdentifiers.json');
 
-// Laden der Graph-Identifiers aus der JSON-Datei
+// Load graph identifiers from the JSON file
 let graphIdentifiers = {};
 try {
     graphIdentifiers = JSON.parse(fs.readFileSync(graphIdentifiersPath, 'utf-8'));
-    console.log('Graph Identifiers:', graphIdentifiers); // Zum Überprüfen
+    console.log('Graph Identifiers:', graphIdentifiers); // For verification
 } catch (err) {
-    console.error('Fehler beim Laden der Graph-Identifiers:', err.message);
+    console.error('Error loading graph identifiers:', err.message);
     process.exit(1);
 }
 
-
-// Statische Dateien bereitstellen
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Funktion: Nächsten Tag um 00:00 UTC in Timestamp umwandeln
+// Function: Get the next day timestamp (adjusted)
 function getNextDayTimestamp() {
     const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);  // Setze die Uhrzeit auf 00:00 UTC
-    today.setUTCDate(today.getUTCDate() + 0);  // Setze das Datum auf den nächsten Tag
-    const nextDayTimestamp = today.getTime();  // Gib den Timestamp in Millisekunden zurück
-    const adjustedTimestamp = nextDayTimestamp - 435600000; // Addiere die benötigte Zeit (522000000 ms)
-    console.log(nextDayTimestamp);
-    console.log(adjustedTimestamp);
-
+    today.setUTCHours(0, 0, 0, 0); // Set time to 00:00 UTC
+    today.setUTCDate(today.getUTCDate() + 0); // Move to the next day
+    const nextDayTimestamp = today.getTime(); // Get timestamp in milliseconds
+    const adjustedTimestamp = nextDayTimestamp - 435600000; // Adjust timestamp
+    console.log('Next Day Timestamp:', nextDayTimestamp);
+    console.log('Adjusted Timestamp:', adjustedTimestamp);
     return adjustedTimestamp;
 }
 
-// Funktion: Daten von der API abrufen
+// Function: Fetch data from the external API
 async function fetchDataFromApi(url) {
     try {
         const response = await fetch(url);
 
         if (!response.ok) {
-            throw new Error(`Fehler beim Abrufen der Daten: ${response.statusText}`);
+            throw new Error(`Error fetching data: ${response.statusText}`);
         }
 
         return await response.json();
     } catch (error) {
-        console.error('API-Fehler:', error.message);
-        return { error: 'Fehler beim Abrufen der Daten' };
+        console.error('API Error:', error.message);
+        return { error: 'Error fetching data from the API' };
     }
 }
 
-// Endpoint: API-Daten bereitstellen
+// Endpoint: Provide API data
 app.get('/data', async (req, res) => {
     try {
-        // Extract the graph type from the query parameter (e.g., "wholesalePrice", "generationMix", "demand")
-        const graphType = req.query.graphType || "wholesalePrice";  // Default to "wholesalePrice" if not provided
-        
-        // Check if the selected graphType is valid
-        const graphIdentifier = graphIdentifiers[graphType];
-        if (!graphIdentifier) {
+        // Get the graph type or ID from the query parameter
+        const requestedGraphType = req.query.graphType || "wholesalePrice";
+        console.log('Requested Graph Type/ID:', requestedGraphType);
+
+        // Reverse lookup if the graphType is provided as an ID
+        let graphKey = Object.keys(graphIdentifiers).find(
+            key => graphIdentifiers[key].id === requestedGraphType
+        );
+
+        // If the reverse lookup fails, assume the graphType is provided as a key
+        if (!graphKey) {
+            graphKey = requestedGraphType;
+        }
+
+        // Validate the resolved graphKey
+        const graphData = graphIdentifiers[graphKey];
+        if (!graphData) {
             throw new Error("Invalid graph type specified.");
         }
 
-        // Berechne den Timestamp für den nächsten Tag um 00:00 UTC
+        // Get the ID from the selected graph data
+        const graphId = graphData.id;
+
+        // Calculate the timestamp for the next day at 00:00 UTC
         const nextTimestamp = getNextDayTimestamp();
 
-        // Erstelle die API-URL mit dem dynamischen Timestamp und Graphen-Identifier
-        const dynamicApiUrl = `https://www.smard.de/app/chart_data/${graphIdentifier}/DE/${graphIdentifier}_DE_hour_${nextTimestamp}.json`;
-        console.log('Aktuelle API-URL:', dynamicApiUrl);
+        // Construct the API URL with the dynamic timestamp and graph identifier
+        const dynamicApiUrl = `https://www.smard.de/app/chart_data/${graphId}/DE/${graphId}_DE_hour_${nextTimestamp}.json`;
+        console.log('Dynamic API URL:', dynamicApiUrl);
 
-        const response = await fetch(dynamicApiUrl); // API-URL mit dynamischem Timestamp
+        const response = await fetch(dynamicApiUrl); // Fetch data from the dynamic API URL
         if (!response.ok) {
-            throw new Error(`API-Fehler: ${response.statusText}`);
+            throw new Error(`API Error: ${response.statusText}`);
         }
 
-        const rawData = await response.json(); // API-Daten lesen
+        const rawData = await response.json(); // Read the API data
 
         if (!rawData.series || rawData.series.length === 0) {
-            throw new Error("Keine Zeitreihen-Daten in den API-Daten gefunden.");
+            throw new Error("No time series data found in the API response.");
         }
 
-        // Transformiere die Zeitreihen-Daten
+        // Transform the time series data
         const transformedData = {
-            labels: rawData.series.map(entry => new Date(entry[0]).toLocaleString()), // Zeitstempel formatieren
-            values: rawData.series.map(entry => entry[1]) // Werte extrahieren
+            labels: rawData.series.map(entry => new Date(entry[0]).toLocaleString()), // Format timestamps
+            values: rawData.series.map(entry => entry[1]) // Extract values
         };
 
-        res.json(transformedData); // An Frontend senden
+        res.json(transformedData); // Send data to the frontend
     } catch (error) {
-        console.error('Fehler in /data-Route:', error.message);
-        res.status(500).json({ error: 'Fehler beim Abrufen der Daten' });
+        console.error('Error in /data route:', error.message);
+        res.status(500).json({ error: 'Error fetching data' });
     }
 });
 
-// Endpoint: Graph-Identifiers bereitstellen
+// Endpoint: Provide graph identifiers
 app.get('/graphIdentifiers', (req, res) => {
-    res.json(graphIdentifiers);  // Sendet die Graph-Identifiers an das Frontend
+    res.json(graphIdentifiers); // Send graph identifiers to the frontend
 });
 
-// Index-Seite bereitstellen
+// Index page
 app.get('/', (req, res) => {
     const indexPath = path.join(__dirname, 'public', 'index.html');
     res.sendFile(indexPath, (err) => {
         if (err) {
-            console.error('Fehler beim Laden der Index-Seite:', err);
-            res.status(500).send('Fehler beim Laden der Seite.');
+            console.error('Error loading index page:', err);
+            res.status(500).send('Error loading the page.');
         }
     });
 });
 
-// Server starten
+// Start the server
 app.listen(port, () => {
-    console.log(`Server läuft unter http://localhost:${port}`);
+    console.log(`Server running at http://localhost:${port}`);
 });

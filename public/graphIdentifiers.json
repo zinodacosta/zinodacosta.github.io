@@ -1,0 +1,69 @@
+{
+    "wholesalePrice": {
+        "color": "rgb(75, 192, 192)",
+        "label": "Wholesale Price",
+        "id": "4169"
+    },
+    "actualelectricityconsumption": {
+        "color": "rgb(255, 99, 132)",
+        "label": "Actual Electricity Consumption",
+        "id" : "410"
+    },
+    "browncoal": {
+        "color": "rgb(255, 159, 64)",
+        "label": "Brown Coal",
+        "id": "1223"
+    },
+    "nuclear": {
+        "color": "rgb(255, 159, 64)",
+        "label": "Nuclear Energy",
+        "id": "1224"
+    },
+    "windoffshore": {
+        "color": "rgb(255, 159, 64)",
+        "label": "Wind Off-Shore",
+        "id": "1225"
+    },
+    "hydroelectric": {
+        "color": "rgb(255, 159, 64)",
+        "label": "Hydroelectric",
+        "id": "1226"
+    },
+    "otherconventional": {
+        "color": "rgb(255, 159, 64)",
+        "label": "Other Conventional",
+        "id": "1227"
+    },
+    "otherrenewable": {
+        "color": "rgb(255, 159, 64)",
+        "label": "Other Renewable",
+        "id": "1228"
+    },
+    "biomass": {
+        "color": "rgb(255, 159, 64)",
+        "label": "Biomass",
+        "id": "4066"
+    },
+    "windonshore": {
+        "color": "rgb(255, 159, 64)",
+        "label": "Wind On-Shore",
+        "id": "4067"
+    },
+    "naturalgas": {
+        "color": "rgb(255, 159, 64)",
+        "label": "Natural Gas",
+        "id": "4071"
+    },
+    "photovoltaik": {
+        "color": "rgb(255, 159, 64)",
+        "label": "photovoltaik",
+        "id": "4068"
+    },
+    "blackcoal": {
+        "color": "rgb(255, 159, 64)",
+        "label": "Black Coal",
+        "id": "4069"
+    }
+
+
+}
