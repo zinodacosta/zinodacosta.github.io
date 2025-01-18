@@ -1,5 +1,8 @@
 let zoomLevel = 1;  // Variable to control the zoom level (1 = current range, 2 = zoomed out, etc.)
+let graphType = 'wholesalePrice';  // Default graph type
+let myChartInstance;  // Store the chart instance
 
+// Function to fetch data dynamically based on the selected graph type and time range
 async function fetchData() {
     try {
         // Get the current date and time
@@ -15,23 +18,39 @@ async function fetchData() {
         const startISOString = start.toISOString();
         const endISOString = end.toISOString();
 
-        // Fetch data with query parameters for the time range
-        const response = await fetch(`/data?start=${encodeURIComponent(startISOString)}&end=${encodeURIComponent(endISOString)}`);
+        // Fetch data from the API with query parameters for the time range and graph type
+        console.log(`Fetching data for graph type: ${graphType}, Start: ${startISOString}, End: ${endISOString}`);  // Debug log
+        const response = await fetch(`/data?graphType=${graphType}&start=${encodeURIComponent(startISOString)}&end=${encodeURIComponent(endISOString)}`);
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch data from API');
+        }
+
         const data = await response.json();
+        console.log('Received data:', data);  // Debug log
 
-        console.log('Received data:', data);
+        // Check if data has the expected structure
+        if (!data.labels || !data.values) {
+            throw new Error('Data structure is incorrect. Expected "labels" and "values" arrays.');
+        }
 
-        // Update the chart with the new time range
-        createChart('myChart', data.labels, data.values, 'Wholesale price', 'rgb(75, 192, 192)');
+        // Destroy previous chart instance if it exists
+        if (myChartInstance) {
+            myChartInstance.destroy();
+        }
+
+        // Update the chart with the new data
+        createChart('myChart', data.labels, data.values, graphType, 'rgb(75, 192, 192)');
     } catch (error) {
         console.error('Error fetching data:', error);
     }
 }
 
+// Function to create a chart
 function createChart(canvasId, labels, values, labelName, borderColor) {
     const ctx = document.getElementById(canvasId).getContext('2d');
     
-    new Chart(ctx, {
+    myChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
@@ -46,8 +65,7 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
         options: {
             responsive: true,
             scales: {
-                x: {
-                },
+                x: {},
                 y: {
                     title: {
                         display: true,
@@ -68,6 +86,12 @@ function zoomOut() {
 
 // Event listener for the zoom-out button
 document.getElementById('zoom-out').addEventListener('click', zoomOut);
+
+// Event listener for selecting a graph type
+document.getElementById('graph-selector').addEventListener('change', (event) => {
+    graphType = event.target.value;  // Update the selected graph type
+    fetchData();  // Fetch new data with the updated graph type
+});
 
 // Initial data fetch when the page loads
 window.onload = fetchData;

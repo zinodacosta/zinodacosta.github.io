@@ -4,49 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Protonik</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script> <!-- Adapter für Zeitstempel -->
-</head>
-<body>
-    <h1></h1>
-
-    <button id="zoom-out">Zoom Out</button>
-    <canvas id="myChart"></canvas>
     
-    <div id="openapi">
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.51.1/swagger-ui-bundle.min.js"></script>
-        <script>
-            window.onload = function () {
-                const ui = SwaggerUIBundle({
-                    url: "openapi.yaml", 
-                    dom_id: "#openapi",
-                   requestInterceptor: function(req) {   
-                    if(this.url !== "openapi.yaml") {
-                       console.log(req);
-                       var pathname = new URL(req.url).pathname;
-                       console.log(pathname);
-                       req.url = "https://smard.api.proxy.bund.dev" + pathname;
-                       console.log(this.url);
-                    }
-                    return req;
-                  },
-                })
-            }
-        </script>
-
-    <canvas id="myChart" width="400" height="200"></canvas> <!-- Chart Container -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+    <!-- Chart.js Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
-    <!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- chartjs-plugin-zoom -->
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0"></script>
+</head>
+<body>
+    <h1>Energy Data Visualization</h1>
+
+    <!-- Graph Type Selector -->
+    <label for="graph-selector">Select Graph Type:</label>
+    <select id="graph-selector">
+        <option value="wholesalePrice">Wholesale Price</option>
+        <option value="actualelectricityconsumption">Actual Electricity Consumption</option>
+
+        <!-- Add more options as needed -->
+    </select>
+
+    <!-- Zoom Out Button -->
+    <button id="zoom-out">Zoom Out</button>
     
-    <script src="js/main.js"></script> <!-- Frontend JavaScript -->
+    <!-- Canvas for Chart -->
+    <canvas id="myChart" width="400" height="200"></canvas> 
 
+    <!-- OpenAPI Documentation -->
+    <div id="openapi"></div>
+
+    <script>
+        window.onload = function () {
+            const ui = SwaggerUIBundle({
+                url: "openapi.yaml", 
+                dom_id: "#openapi",
+                requestInterceptor: function(req) {   
+                    if(this.url !== "openapi.yaml") {
+                        console.log(req);
+                        var pathname = new URL(req.url).pathname;
+                        console.log(pathname);
+                        req.url = "https://smard.api.proxy.bund.dev" + pathname;
+                        console.log(this.url);
+                    }
+                    return req;
+                },
+            });
+        }
+    </script>
+
+    <!-- Frontend JavaScript -->
+    <script src="js/main.js"></script>
 </body>
 </html>

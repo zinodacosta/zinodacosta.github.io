@@ -14,17 +14,19 @@ const port = 3000;
 // Pfad zur config.txt
 const configPath = path.join(__dirname, 'config.txt');
 
-// API-URL aus der Datei laden
-let apiUrl = '';
-try {
-    // Laden der URL aus der config.txt
-    apiUrl = fs.readFileSync(configPath, 'utf-8').trim();
-    console.log('Gelesene API-URL:', apiUrl);  // Diese Zeile gibt den Wert von apiUrl aus
+// Pfad zur JSON-Datei mit den Graph-Identifiers
+const graphIdentifiersPath = path.join(__dirname, 'graphIdentifiers.json');
 
+// Laden der Graph-Identifiers aus der JSON-Datei
+let graphIdentifiers = {};
+try {
+    graphIdentifiers = JSON.parse(fs.readFileSync(graphIdentifiersPath, 'utf-8'));
+    console.log('Graph Identifiers:', graphIdentifiers); // Zum Überprüfen
 } catch (err) {
-    console.error('Fehler beim Laden der API-URL aus der config.txt:', err.message);
+    console.error('Fehler beim Laden der Graph-Identifiers:', err.message);
     process.exit(1);
 }
+
 
 // Statische Dateien bereitstellen
 app.use(express.static(path.join(__dirname, 'public')));
@@ -61,11 +63,20 @@ async function fetchDataFromApi(url) {
 // Endpoint: API-Daten bereitstellen
 app.get('/data', async (req, res) => {
     try {
+        // Extract the graph type from the query parameter (e.g., "wholesalePrice", "generationMix", "demand")
+        const graphType = req.query.graphType || "wholesalePrice";  // Default to "wholesalePrice" if not provided
+        
+        // Check if the selected graphType is valid
+        const graphIdentifier = graphIdentifiers[graphType];
+        if (!graphIdentifier) {
+            throw new Error("Invalid graph type specified.");
+        }
+
         // Berechne den Timestamp für den nächsten Tag um 00:00 UTC
         const nextTimestamp = getNextDayTimestamp();
 
-        // Erstelle die API-URL mit dem berechneten Timestamp
-        const dynamicApiUrl = `https://www.smard.de/app/chart_data/4169/DE/4169_DE_hour_${nextTimestamp}.json`;
+        // Erstelle die API-URL mit dem dynamischen Timestamp und Graphen-Identifier
+        const dynamicApiUrl = `https://www.smard.de/app/chart_data/${graphIdentifier}/DE/${graphIdentifier}_DE_hour_${nextTimestamp}.json`;
         console.log('Aktuelle API-URL:', dynamicApiUrl);
 
         const response = await fetch(dynamicApiUrl); // API-URL mit dynamischem Timestamp
@@ -90,6 +101,11 @@ app.get('/data', async (req, res) => {
         console.error('Fehler in /data-Route:', error.message);
         res.status(500).json({ error: 'Fehler beim Abrufen der Daten' });
     }
+});
+
+// Endpoint: Graph-Identifiers bereitstellen
+app.get('/graphIdentifiers', (req, res) => {
+    res.json(graphIdentifiers);  // Sendet die Graph-Identifiers an das Frontend
 });
 
 // Index-Seite bereitstellen
