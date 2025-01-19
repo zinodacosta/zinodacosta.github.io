@@ -10,7 +10,7 @@
         
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Protonik</title>
+        <title>Protonik Hydrogen Dashboard</title>
     
         <!-- Chart.js Libraries -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -26,16 +26,18 @@
    <label for="graph-selector">Select Graph Type:</label>
     <select id="graph-selector">
         <option value="wholesalePrice">Wholesale Price</option>
-        <option value="browncoal">Electricity Generation: Brown Coal</option>
-        <option value="biomass">Electricity Generation: Biomass</option>
-        <option value="windoffshore">Electricity Generation: Wind Off-Shore Coal</option>
-        <option value="windonshore">Electricity Generation: Wind On-Shore Coal</option>
-        <option value="hydroelectric">Electricity Generation: Hydroelectric</option>
-        <option value="naturalgas">Electricity Generation: Natural Gas</option>
-        <option value="blackcoal">Electricity Generation: Black Coal</option>
-        <option value="photovoltaik">Electricity Generation: Photovoltaik</option>
-        <option value="otherconventional">Electricity Generation: Other Conventional</option>
-        <option value="otherrenewable">Electricity Generation: Other Renewable</option>
+    <optgroup label="Electricity Generation">
+        <option value="browncoal">Brown Coal</option>
+        <option value="biomass">Biomass</option>
+        <option value="windoffshore">Wind Off-Shore</option>
+        <option value="windonshore">Wind On-Shore</option>
+        <option value="hydroelectric">Hydroelectric</option>
+        <option value="naturalgas">Natural Gas</option>
+        <option value="blackcoal">Black Coal</option>
+        <option value="photovoltaik">Photovoltaik</option>
+        <option value="otherconventional">Other Conventional</option>
+        <option value="otherrenewable">Other Renewable</option>
+    </optgroup>
         <!-- Add more options as needed -->
     </select>
 

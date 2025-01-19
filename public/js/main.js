@@ -132,6 +132,12 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
                     },
                     beginAtZero: true
                 }
+            },
+            layout:{
+                padding:{
+                    right:500,
+                    left:10
+                }
             }
         }
     });
@@ -239,9 +245,15 @@ function createChart2(canvasId, labels, values, labelName, borderColor) {
                 y: {
                     title: {
                         display: true,
-                        text: '€/MWh'
+                        text: 'MWh'
                     },
                     beginAtZero: true
+                }
+            },
+            layout:{
+                padding:{
+                    right:500,
+                    left:10
                 }
             }
         }
