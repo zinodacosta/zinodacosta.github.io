@@ -34,9 +34,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 function getNextDayTimestamp() {
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0); // Set time to 00:00 UTC
-    today.setUTCDate(today.getUTCDate() + 0); // Move to the next day
+    today.setUTCDate(today.getUTCDate() - 6 ); // Move to the next day
     const nextDayTimestamp = today.getTime(); // Get timestamp in milliseconds
-    const adjustedTimestamp = nextDayTimestamp - 435600000; // Adjust timestamp
+    const adjustedTimestamp = nextDayTimestamp - 3600000; // Adjust timestamp by 1 hour
     console.log('Next Day Timestamp:', nextDayTimestamp);
     console.log('Adjusted Timestamp:', adjustedTimestamp);
     return adjustedTimestamp;
