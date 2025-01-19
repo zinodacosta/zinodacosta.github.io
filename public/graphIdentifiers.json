@@ -15,52 +15,52 @@
         "id": "1223"
     },
     "nuclear": {
-        "color": "rgb(255, 159, 64)",
+        "color": "rgb(0, 182, 30)",
         "label": "Nuclear Energy",
         "id": "1224"
     },
     "windoffshore": {
-        "color": "rgb(255, 159, 64)",
+        "color": "rgb(0, 106, 177)",
         "label": "Wind Off-Shore",
         "id": "1225"
     },
     "hydroelectric": {
-        "color": "rgb(255, 159, 64)",
+        "color": "rgb(0, 217, 255)",
         "label": "Hydroelectric",
         "id": "1226"
     },
     "otherconventional": {
-        "color": "rgb(255, 159, 64)",
+        "color": "rgb(145, 145, 145)",
         "label": "Other Conventional",
         "id": "1227"
     },
     "otherrenewable": {
-        "color": "rgb(255, 159, 64)",
+        "color": "rgb(84, 150, 89)",
         "label": "Other Renewable",
         "id": "1228"
     },
     "biomass": {
-        "color": "rgb(255, 159, 64)",
+        "color": "rgb(182, 109, 0)",
         "label": "Biomass",
         "id": "4066"
     },
     "windonshore": {
-        "color": "rgb(255, 159, 64)",
+        "color": "rgb(0, 77, 177)",
         "label": "Wind On-Shore",
         "id": "4067"
     },
     "naturalgas": {
-        "color": "rgb(255, 159, 64)",
+        "color": "rgb(71, 43, 0)",
         "label": "Natural Gas",
         "id": "4071"
     },
     "photovoltaik": {
-        "color": "rgb(255, 159, 64)",
+        "color": "rgb(0, 29, 156)",
         "label": "photovoltaik",
         "id": "4068"
     },
     "blackcoal": {
-        "color": "rgb(255, 159, 64)",
+        "color": "rgb(0, 0, 0)",
         "label": "Black Coal",
         "id": "4069"
     }

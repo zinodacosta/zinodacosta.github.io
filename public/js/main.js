@@ -59,8 +59,7 @@ async function fetchData() {
 
         if (myChartInstance) {
             myChartInstance.destroy();
-        }
-
+        }              
         const color = graphData ? graphData.color : 'rgb(0, 0, 0)';
         const label = graphData ? graphData.label : 'Unknown Graph';
 
