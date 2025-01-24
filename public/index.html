@@ -22,30 +22,26 @@
 <body>
     <h1>Protonik Hydrogen Dashboard</h1>
 
-    <!-- Graph Type Selector -->
-   <label for="graph-selector">Select Graph Type:</label>
-    <select id="graph-selector">
-        <option value="wholesalePrice">Wholesale Price</option>
-    <optgroup label="Electricity Generation">
-        <option value="browncoal">Brown Coal</option>
-        <option value="biomass">Biomass</option>
-        <option value="windoffshore">Wind Off-Shore</option>
-        <option value="windonshore">Wind On-Shore</option>
-        <option value="hydroelectric">Hydroelectric</option>
-        <option value="naturalgas">Natural Gas</option>
-        <option value="blackcoal">Black Coal</option>
-        <option value="photovoltaik">Photovoltaik</option>
-        <option value="otherconventional">Other Conventional</option>
-        <option value="otherrenewable">Other Renewable</option>
-    </optgroup>
-        <!-- Add more options as needed -->
-    </select>
+
 
     <!-- Canvas for Chart -->
     <canvas id="myChart" width="400" height="70"></canvas> 
 
-<div>
+<div id ="graph-selector2">
     <h2 id="chart2-title">Actual Electricity Consumption</h2>
+    <label for="graph-selector2">Select Graph Types</label>
+
+    <!--Creating Option Tool for second Graph-->
+    <input type="checkbox" id="browncoal" value="browncoal"> Brown Coal
+    <input type="checkbox" id="biomass" value="biomass"> Biomass
+    <input type="checkbox" id="windoffshore" value="windoffshore"> Wind Offshore
+    <input type="checkbox" id="windonshore" value="windonshore"> Wind Onshore
+    <input type="checkbox" id="hydroelectric" value="hydroelectric"> Hydroelectric
+    <input type="checkbox" id="naturalgas" value="naturalgas"> Natural Gas
+    <input type="checkbox" id="blackcoal" value="blackcoal"> Black Coal
+    <input type="checkbox" id="photovoltaik" value="photovoltaik"> Photovoltaik
+    <input type="checkbox" id="otherconventional" value="otherconventional"> Other Conventional
+    <input type="checkbox" id="otherrenewable" value="otherrenewable"> Other Renewable
     <canvas id="myChart2" width="400" height="70"></canvas>
 </div>
     <!-- OpenAPI Documentation -->

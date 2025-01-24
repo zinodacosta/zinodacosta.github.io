@@ -37,8 +37,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 function getNextDayTimestamp() {
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0); //Set time to 00:00 UTC
-    today.setUTCDate(today.getUTCDate() - 3); //Move to the days before this is a bit tricky because the variable increments
-    //each day until 3 and then goes back to 0 so we probably have to implement a system were it increments after a day until 3 and then gets set to 0 again
+    today.setUTCDate(today.getUTCDate() - 4); //Move to the days before this is a bit tricky because the variable increments
+    //each day until 3 and then goes back to 0 so we probably have to implement a system were it increments after a day until x? and then gets set to 0 again
     const nextDayTimestamp = today.getTime(); //Get timestamp in milliseconds
     const adjustedTimestamp = nextDayTimestamp - 3600000; //Adjust timestamp by 1 hour
     console.log('Next Day Timestamp:', nextDayTimestamp);
@@ -105,7 +105,7 @@ async function getLastEntry(){
     const nextTimestamp = getNextDayTimestamp();
     const calcApiUrl = `https://www.smard.de/app/chart_data/4169/DE/4169_DE_hour_${nextTimestamp}.json`;
     try{
-        const response = await fetch(calcApiUrl); //Fetch from url
+        const response = await fetch(calcApiUrl); //Fetch from url 
         const data = await response.json();
         //filtering out all entries that are NULL
     if(data && data.series){
