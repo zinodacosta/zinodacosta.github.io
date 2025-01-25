@@ -1,48 +1,48 @@
-let graphType = 'wholesalePrice'; // Default graph type for the first chart
-let graphTypesForSecondChart = ['actualelectricityconsumption']; // Default second chart graph type
-let myChartInstance; // Store the first chart instance
-let myChartInstance2 = null; // Store the second chart instance
-let graphIdentifiers; // Will store the graphIdentifiers object
+let graphType = 'wholesalePrice'; //Default graph type for the first chart
+let graphTypesForSecondChart = ['actualelectricityconsumption']; //Default second chart graph type
+let myChartInstance; //Store the first chart instance
+let myChartInstance2 = null; //Store the second chart instance
+let graphIdentifiers; //Will store the graphIdentifiers object
 
 
 
-// Define the vertical line plugin for the first chart
+//Define the vertical line plugin for the first chart
 const verticalLinePlugin1 = {
     id: 'verticalLine1',
     afterDraw(chart) {
         if (chart.tooltip._active && chart.tooltip._active.length) {
             const ctx = chart.ctx;
-            const activePoint = chart.tooltip._active[0]; // Get the active tooltip point
-            const x = activePoint.element.x; // X-coordinate of the point
+            const activePoint = chart.tooltip._active[0]; //Get the active tooltip point
+            const x = activePoint.element.x; //X-coordinate of the point
 
             ctx.save();
             ctx.beginPath();
-            ctx.moveTo(x, chart.chartArea.top); // Start from the top of the chart area
-            ctx.lineTo(x, chart.chartArea.bottom); // Draw to the bottom of the chart area
+            ctx.moveTo(x, chart.chartArea.top); //Start from the top of the chart area
+            ctx.lineTo(x, chart.chartArea.bottom); //Draw to the bottom of the chart area
             ctx.lineWidth = 1;
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)'; // Customize the color of the line
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)'; //Customize the color of the line
             ctx.stroke();
             ctx.restore();
         }
     }
 };
 
-// Define the vertical line plugin for the second chart
+//Define the vertical line plugin for the second chart
 const verticalLinePlugin2 = {
     id: 'verticalLine2',
     afterDraw(chart) {
-        // Check if the tooltip is active and has at least one active point
+        //Check if the tooltip is active and has at least one active point
         if (chart.tooltip && chart.tooltip._active && chart.tooltip._active.length) {
             const ctx = chart.ctx;
-            const activePoint = chart.tooltip._active[0]; // Get the active tooltip point
-            const x = activePoint.element.x; // X-coordinate of the point
+            const activePoint = chart.tooltip._active[0]; //Get the active tooltip point
+            const x = activePoint.element.x; //X-coordinate of the point
 
             ctx.save();
             ctx.beginPath();
-            ctx.moveTo(x, chart.chartArea.top); // Start from the top of the chart area
-            ctx.lineTo(x, chart.chartArea.bottom); // Draw to the bottom of the chart area
+            ctx.moveTo(x, chart.chartArea.top); //Start from the top of the chart area
+            ctx.lineTo(x, chart.chartArea.bottom); //Draw to the bottom of the chart area
             ctx.lineWidth = 1;
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)'; // Customize the color of the line
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)'; //Customize the color of the line
             ctx.stroke();
             ctx.restore();
         }
@@ -50,44 +50,44 @@ const verticalLinePlugin2 = {
 };
 
 
-// Function to load the graph identifiers from the JSON file
+//Function to load the graph identifiers from the JSON file
 async function loadGraphIdentifiers() {
     try {
-        const response = await fetch('/graphIdentifiers'); // Fetches from JSON
+        const response = await fetch('/graphIdentifiers'); //Fetches from JSON
         if (!response.ok) {
             throw new Error('Failed to load graph identifiers');
         }
-        const data = await response.json(); // Wait for response
-        graphIdentifiers = data; // Store the loaded graph identifiers
+        const data = await response.json(); //Wait for response
+        graphIdentifiers = data; //Store the loaded graph identifiers
         console.log('[INFO] Graph identifiers loaded:', graphIdentifiers);
     } catch (error) {
         console.error('[ERROR] Loading graph identifiers:', error.message);
     }
 }
 
-// Function to fetch data dynamically based on the selected graph type and time range
+//Function to fetch data dynamically based on the selected graph type and time range
 async function fetchData() {
-    if (!graphIdentifiers) { // Ensures loading before proceeding
+    if (!graphIdentifiers) { //Ensures loading before proceeding
         console.error('[ERROR] Graph identifiers not loaded yet.');
         return;
     }
 
     try {
-        // Define start and end time for data request
+        //Define start and end time for data request
         const now = new Date();
         const timeRangeInHours = 1;
         const start = new Date(now.getTime() - timeRangeInHours * 60 * 60 * 1000);
         const end = now;
 
-        const startISOString = start.toISOString(); // Converts to ISO string
+        const startISOString = start.toISOString(); //Converts to ISO string
         const endISOString = end.toISOString();
 
         console.log(`[INFO] Fetching data for graph type: ${graphType}, Start: ${startISOString}, End: ${endISOString}`);
 
-        const graphData = graphIdentifiers[graphType]; // Resolve graphType to ID
-        const graphId = graphData ? graphData.id : '1'; // Fallback to ID 1
+        const graphData = graphIdentifiers[graphType]; //Resolve graphType to ID
+        const graphId = graphData ? graphData.id : '1'; //Fallback to ID 1
 
-        // Construct dynamic API URL
+        //Construct dynamic API URL
         const response = await fetch(`/data?graphType=${graphId}&start=${encodeURIComponent(startISOString)}&end=${encodeURIComponent(endISOString)}`);
 
         if (!response.ok) {
@@ -101,7 +101,7 @@ async function fetchData() {
             throw new Error('Data structure is incorrect. Expected "labels" and "values" arrays.');
         }
 
-        // Destroy existing chart instance to avoid overlapping
+        //Destroy existing chart instance to avoid overlapping
         if (myChartInstance) {
             myChartInstance.destroy();
         }
@@ -111,14 +111,14 @@ async function fetchData() {
 
         createChart('myChart', data.labels, data.values, label, color);
 
-        // Fetch data for the second chart
+        //Fetch data for the second chart
         fetchDataForSecondGraph();
     } catch (error) {
         console.error('[ERROR] Fetching data:', error);
     }
 }
 
-// Function to create the first chart
+//Function to create the first chart
 function createChart(canvasId, labels, values, labelName, borderColor) {
     const ctx = document.getElementById(canvasId).getContext('2d');
 
@@ -134,7 +134,7 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
                 borderColor: borderColor,
                 backgroundColor: borderColor.startsWith('rgb')
                     ? borderColor.replace(/rgb\(([^)]+)\)/, 'rgba($1, 0.8)')
-                    : 'rgba(0, 0, 0, 0.8)', // Fallback to black
+                    : 'rgba(0, 0, 0, 0.8)', //Fallback to black
                 tension: 0.1,
                 fill: true,
                 pointRadius: 0,
@@ -156,7 +156,7 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
                         label: context => `${context.dataset.label}: ${context.raw.toFixed(2)} €/MWh`
                     }
                 },
-                verticalLine1: {} // Enable the custom plugin
+                verticalLine1: {} //Enable the custom plugin
             },
             interaction: {
                 mode: 'index',
@@ -182,12 +182,12 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
                 }
             }
         },
-        plugins: [verticalLinePlugin1] // Register the custom plugin here
+        plugins: [verticalLinePlugin1] //Register the custom plugin here
     });
 }
 
 
-// Function to fetch data for the second chart
+//Function to fetch data for the second chart
 async function fetchDataForSecondGraph() {
     if (!graphIdentifiers) {
         console.error('Graph identifiers not loaded yet.');
@@ -236,29 +236,27 @@ async function fetchDataForSecondGraph() {
     }
 }
 
-
-// Function to update the second chart
-// Function to update the second chart
+//Function to update the second chart
 function updateSecondChart(graphDataArray) {
     const ctx = document.getElementById('myChart2').getContext('2d');
 
-    // Destroy the previous chart instance to prevent overlap
+    //Destroy the previous chart instance to prevent overlap
     if (myChartInstance2) {
         myChartInstance2.destroy();
     }
 
-    // Create a new chart instance with the vertical line plugin
+    //Create a new chart instance with the vertical line plugin
     myChartInstance2 = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: graphDataArray[0].labels, // Assume shared labels across datasets
+            labels: graphDataArray[0].labels, //Assume shared labels across datasets
             datasets: graphDataArray.map(graphData => ({
                 label: graphData.label,
                 data: graphData.values,
                 borderColor: graphData.borderColor,
                 backgroundColor: graphData.borderColor.startsWith('rgb')
-                    ? graphData.borderColor.replace(/rgb\(([^)]+)\)/, 'rgba($1, 0.8)')  // Ensure transparency for background
-                    : 'rgba(0, 0, 0, 0.8)', // Fallback to black
+                    ? graphData.borderColor.replace(/rgb\(([^)]+)\)/, 'rgba($1, 0.8)')  //Ensure transparency for background
+                    : 'rgba(0, 0, 0, 0.8)', //Fallback to black
                 tension: 0.1,
                 fill: false,
                 pointRadius: 0,
@@ -277,7 +275,7 @@ function updateSecondChart(graphDataArray) {
                     mode: 'index',
                     intersect: false
                 },
-                verticalLine2: {}  // Ensure plugin is registered
+                verticalLine2: {}  //Ensure plugin is registered
             },
             interaction: {
                 mode: 'index',
@@ -303,12 +301,12 @@ function updateSecondChart(graphDataArray) {
                 }
             }
         },
-        plugins: [verticalLinePlugin2] // Register the plugin here
+        plugins: [verticalLinePlugin2] //Register plugin
     });
 }
 
 
-// Checkbox event listener
+//Checkbox event listener
 document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
     checkbox.addEventListener('change', () => {
         const selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
@@ -317,7 +315,7 @@ document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
     });
 });
 
-// Initial data fetch on page load
+//Initial data fetch on page load
 window.onload = async () => {
     await loadGraphIdentifiers();
     fetchData();
