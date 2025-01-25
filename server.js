@@ -32,12 +32,14 @@ try {
 //Serve static files from public folder directory
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+
 //Function: Get the next day timestamp (adjusted)
 //SMARD API is only updated every few days if today is 23/1/2025 4pm we have to use the API url from 19/1/2025 11pm
 function getNextDayTimestamp() {
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0); //Set time to 00:00 UTC
-    today.setUTCDate(today.getUTCDate() - 4); //Move to the days before this is a bit tricky because the variable increments
+    today.setUTCDate(today.getUTCDate() - 5); //Move to the days before this is a bit tricky because the variable increments
     //each day until 3 and then goes back to 0 so we probably have to implement a system were it increments after a day until x? and then gets set to 0 again
     const nextDayTimestamp = today.getTime(); //Get timestamp in milliseconds
     const adjustedTimestamp = nextDayTimestamp - 3600000; //Adjust timestamp by 1 hour
@@ -112,6 +114,7 @@ async function getLastEntry(){
         const filteredData = data.series.filter(entry => entry[1] !== null);
         const lastEntry = filteredData[filteredData.length-1];
         console.log("This is the latest value of the wholesale price:", lastEntry)
+        
         return lastEntry;
     }else{
         console.log("unexpected data format:", data);
