@@ -1,13 +1,19 @@
-let timeInHours = 1 / 3600; //zeit in 5sec
+// simulation.js
+
+let timeInHours = 1 / 3600; // Zeit in 5 Sekunden
+
+
 
 class photovoltaik {
   constructor() {
-    this.power = 250; //Watt
+    this.power = 250; // Watt
     this.efficiency = 0.2;
   }
+
   async checkforSun() {
     const apiKey = "e7c7b0c5b06544339dd03539253001";
-    const city = "Madrid";
+    const city = "New York";
+    document.getElementById("location").innerHTML = city;
     let sun = false;
     try {
       const response = await fetch(
@@ -19,73 +25,42 @@ class photovoltaik {
       if (daytime == true) {
         if (cloudiness < 20) {
           document.getElementById("sun").textContent =
-            "Die Sonne scheint. PV lädt";
+            "Sun is shining. PV charging";
           sun = true;
         } else {
           document.getElementById("sun").textContent =
-            "Es ist bewölkt. PV lädt nicht";
+            "It is cloudy. PV not charging";
           sun = false;
         }
       } else {
         document.getElementById("sun").textContent =
-          "Es ist nachts. PV lädt nicht";
+          "It is night-time. PV not charging";
         sun = false;
       }
       return sun;
     } catch (error) {
-      console.error("Fehler", error);
+      console.error("Error", error);
     }
   }
 }
 
 class battery {
   constructor() {
-    this.capacity = 5; //kWh maximaler füllstand
-    this.storage = 0; //kWh aktueller füllstand
+    this.capacity = 5; // kWh maximaler Füllstand
+    this.storage = 0; // kWh aktueller Füllstand
   }
 
   updateBatteryStorage(amount) {
     if (this.storage < this.capacity) {
       this.storage += amount;
-      document.getElementById("battery-level").innerHTML = "Batteriestand: " + this.storage.toFixed(2) + "kWh";
+      document.getElementById("battery-level").innerHTML = + this.storage.toFixed(2) + "kWh";
     } else {
-      document.getElementById("battery-level").textContent = "Batterie ist voll";
+      document.getElementById("battery-level").textContent = "Battery is full";
     }
   }
 }
 
-class electrolyzer {
-  constructor() {
-    this.tank = 10; //kg
-    this.efficiency = 0.7; //% /100
-  }
-}
 
-class fuelcell {
-  constructor() {
-    this.efficiency = 0.5; //% /100
-  }
-}
-
-class hydrogenstorage {
-  constructor() {
-    this.capacity = 100; //kg max storage
-    this.fill_level = 20; //kg storage
-  }
-}
-
-class heater {
-  constructor() {
-    this.efficiency = 0.9; //%
-    this.tank = 50; //liter
-  }
-}
-
-class powersource {
-  constructor(power) {
-    this.power = 2000; //W
-  }
-}
 
 const pv = new photovoltaik();
 const charge = new battery();
@@ -95,7 +70,29 @@ async function updateSimulation() {
   if (sun) {
     let powergenerated = pv.efficiency * pv.power * timeInHours;
     charge.updateBatteryStorage(powergenerated);
+
+    // Sende den Batteriestand an den Server (Backend)
+    try {
+      const response = await fetch('http://localhost:3000/saveBatteryStatus', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ batteryLevel: charge.storage }),
+      });
+
+      if (response.ok) {
+        console.log('Battery level saved to DB');
+      } else {
+        console.error('Failed to save battery level');
+      }
+    } catch (error) {
+      console.error('Error sending battery level to server:', error);
+    }
   }
 }
+
+
+
 
 setInterval(updateSimulation, 1000);

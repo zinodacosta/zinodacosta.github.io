@@ -7,6 +7,8 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@influxdata/influxdb-client": "^1.35.0",
+    "@influxdata/influxdb3-client": "^1.0.0",
     "axios": "^1.7.9",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-adapter-luxon": "^1.3.1",

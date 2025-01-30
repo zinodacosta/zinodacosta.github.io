@@ -22,13 +22,15 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.0"></script>
 
+
+
 </head>
 
 <body>
     <h1>Protonik Hydrogen Dashboard</h1>
 
 
-
+    <h1>Wholesale Price</h1>
     <!-- Canvas for Chart -->
     <canvas id="myChart" width="400" height="70"></canvas>
 
@@ -51,8 +53,9 @@
         <canvas id="myChart2" width="400" height="85"></canvas>
 
         <!-- Hydrogen Eco System Section -->
-            <p><span id="battery-level"></span></p>
+            <p>Battery Level: <span id="battery-level">0</span></p>
             <p>PV Status: <span id="sun"></span></p>
+            <p>Location: <span id="location"></span></p>
     </div>
     <!-- OpenAPI Documentation -->
     <div id="openapi"></div>
