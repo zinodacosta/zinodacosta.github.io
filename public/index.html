@@ -1,62 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <!-- Link to Google Fonts for Roboto -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-        <!-- Link to your custom CSS -->
-        <link rel="stylesheet" href="css/styles.css">
-        
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Protonik Hydrogen Dashboard</title>
-    
-        <!-- Chart.js Libraries -->
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0"></script>
-        <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.0"></script>
 
-    </head>
+<head>
+    <!-- Link to Google Fonts for Roboto -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <!-- Link to your custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protonik Hydrogen Dashboard</title>
+
+    <!-- Chart.js Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.0"></script>
+
+</head>
+
 <body>
     <h1>Protonik Hydrogen Dashboard</h1>
 
 
 
     <!-- Canvas for Chart -->
-    <canvas id="myChart" width="400" height="70"></canvas> 
+    <canvas id="myChart" width="400" height="70"></canvas>
 
-<div id ="graph-selector2">
-    <h2 id="chart2-title">Actual Electricity Consumption</h2>
-    <label for="graph-selector2">Select Graph Types</label>
+    <div id="graph-selector2">
+        <h2 id="chart2-title">Actual Electricity Consumption</h2>
+        <label for="graph-selector2">Select Graph Types</label>
 
-    <!--Creating Option Tool for second Graph-->
-    <input type="checkbox" id="browncoal" value="browncoal"> Brown Coal
-    <input type="checkbox" id="biomass" value="biomass"> Biomass
-    <input type="checkbox" id="windoffshore" value="windoffshore"> Wind Offshore
-    <input type="checkbox" id="windonshore" value="windonshore"> Wind Onshore
-    <input type="checkbox" id="hydroelectric" value="hydroelectric"> Hydroelectric
-    <input type="checkbox" id="naturalgas" value="naturalgas"> Natural Gas
-    <input type="checkbox" id="blackcoal" value="blackcoal"> Black Coal
-    <input type="checkbox" id="photovoltaik" value="photovoltaik"> Photovoltaik
-    <input type="checkbox" id="otherconventional" value="otherconventional"> Other Conventional
-    <input type="checkbox" id="otherrenewable" value="otherrenewable"> Other Renewable
+        <!--Creating Option Tool for second Graph-->
+        <input type="checkbox" id="browncoal" value="browncoal"> Brown Coal
+        <input type="checkbox" id="biomass" value="biomass"> Biomass
+        <input type="checkbox" id="windoffshore" value="windoffshore"> Wind Offshore
+        <input type="checkbox" id="windonshore" value="windonshore"> Wind Onshore
+        <input type="checkbox" id="hydroelectric" value="hydroelectric"> Hydroelectric
+        <input type="checkbox" id="naturalgas" value="naturalgas"> Natural Gas
+        <input type="checkbox" id="blackcoal" value="blackcoal"> Black Coal
+        <input type="checkbox" id="photovoltaik" value="photovoltaik"> Photovoltaik
+        <input type="checkbox" id="otherconventional" value="otherconventional"> Other Conventional
+        <input type="checkbox" id="otherrenewable" value="otherrenewable"> Other Renewable
 
-    <canvas id="myChart2" width="400" height="85"></canvas>
-</div>
+        <canvas id="myChart2" width="400" height="85"></canvas>
+
+        <!-- Hydrogen Eco System Section -->
+            <p><span id="battery-level"></span></p>
+            <p>PV Status: <span id="sun"></span></p>
+    </div>
     <!-- OpenAPI Documentation -->
     <div id="openapi"></div>
 
     <script>
         window.onload = function () {
             const ui = SwaggerUIBundle({
-                url: "openapi.yaml", 
+                url: "openapi.yaml",
                 dom_id: "#openapi",
-                requestInterceptor: function(req) {   
-                    if(this.url !== "openapi.yaml") {
+                requestInterceptor: function (req) {
+                    if (this.url !== "openapi.yaml") {
                         console.log(req);
                         var pathname = new URL(req.url).pathname;
                         console.log(pathname);
@@ -69,7 +76,9 @@
         }
     </script>
 
-    <!-- Frontend JavaScript -->
+    <!--JavaScript -->
     <script src="js/main.js"></script>
+    <script src="js/simulation.js"></script>
 </body>
+
 </html>
