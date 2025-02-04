@@ -140,9 +140,15 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
                 pointRadius: 0,
                 pointHoverRadius: 6,
                 pointHitRadius: 20,
+                
             }]
         },
         options: {
+            layout:{
+                padding:{
+                    left: 20
+                }
+            },
             responsive: true,
             plugins: {
                 legend: {
@@ -164,6 +170,11 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
             },
             scales: {
                 x: {
+                    ticks:{
+                        font:{
+                            size:14
+                        }
+                    },
                     type: "time",
                     time: {
                         unit: "hour",
@@ -174,9 +185,17 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
                     }
                 },
                 y: {
+                    ticks:{
+                        font:{
+                            size:14
+                        }
+                    },
                     title: {
                         display: true,
-                        text: "€/MWh"
+                        text: "€/MWh",
+                        font: {
+                            size: 14
+                        }
                     },
                     beginAtZero: true
                 }
@@ -200,7 +219,9 @@ async function fetchDataForSecondGraph() {
             return;
         }
 
-        graphTypesForSecondChart = ["actualelectricityconsumption", ...graphTypesForSecondChart];
+        if (!graphTypesForSecondChart.includes("actualelectricityconsumption")) {
+            graphTypesForSecondChart.unshift("actualelectricityconsumption");
+        }
 
         const graphDataPromises = graphTypesForSecondChart.map(async (graphType) => {
             const graphData = graphIdentifiers[graphType];
@@ -265,6 +286,11 @@ function updateSecondChart(graphDataArray) {
             }))
         },
         options: {
+            layout:{
+                padding:{
+                    left: 20
+                }
+            },
             responsive: true,
             plugins: {
                 legend: {
@@ -283,6 +309,11 @@ function updateSecondChart(graphDataArray) {
             },
             scales: {
                 x: {
+                    ticks:{
+                        font:{
+                            size:14
+                        }
+                    },
                     type: "time",
                     time: {
                         unit: "hour",
@@ -293,9 +324,17 @@ function updateSecondChart(graphDataArray) {
                     }
                 },
                 y: {
+                    ticks:{
+                        font:{
+                            size:14
+                        }
+                    },
                     title: {
                         display: true,
-                        text: "MWh"
+                        text: "MWh",
+                        font: {
+                            size: 14
+                        }
                     },
                     beginAtZero: true
                 }
@@ -311,6 +350,11 @@ document.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
     checkbox.addEventListener("change", () => {
         const selectedCheckboxes = document.querySelectorAll("input[type='checkbox']:checked");
         graphTypesForSecondChart = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+        if (!graphTypesForSecondChart.includes("actualelectricityconsumption")) {
+            graphTypesForSecondChart.unshift("actualelectricityconsumption");
+        }
+
         fetchDataForSecondGraph();
     });
 });

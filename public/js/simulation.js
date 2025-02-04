@@ -1,11 +1,11 @@
-let timeInHours = 1 / 3600; // 1 Std in 1 Sekunde
+let timeInHours = 1 / 3600; //1 Std in 1 Sekunde
 
 
 
 
 class photovoltaik {
   constructor() {
-    this.power = 250; // Watt
+    this.power = 250; //Watt
     this.efficiency = 0.2;
   }
 
@@ -45,8 +45,8 @@ class photovoltaik {
 
 class battery {
   constructor() {
-    this.capacity = 5; // kWh maximaler Füllstand
-    this.storage = 0; // kWh aktueller Füllstand
+    this.capacity = 5; //kWh maximaler Füllstand
+    this.storage = 0; //kWh aktueller Füllstand
   }
 
   updateBatteryStorage(amount) {

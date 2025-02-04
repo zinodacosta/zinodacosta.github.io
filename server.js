@@ -119,8 +119,8 @@ app.post("/saveWholeSalePrice", async (req, res) => {
   }
 
   try {
-    // Save the timestamp and value in the database
-    await saveWholeSalePrice(timestamp, value);  // Only call saveWholeSalePrice once
+    //Save the timestamp and value in the database
+    await saveWholeSalePrice(timestamp, value);  //Only call saveWholeSalePrice once
     res.status(200).json({ message: "Timestamp and value saved successfully" });
   } catch (error) {
     console.error("Error saving timestamp or value", error);
