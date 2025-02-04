@@ -1,6 +1,5 @@
-// simulation.js
+let timeInHours = 1 / 3600; // 1 Std in 1 Sekunde
 
-let timeInHours = 1 / 3600; // Zeit in 5 Sekunden
 
 
 
@@ -12,7 +11,7 @@ class photovoltaik {
 
   async checkforSun() {
     const apiKey = "e7c7b0c5b06544339dd03539253001";
-    const city = "New York";
+    const city = "Los Angeles";
     document.getElementById("location").innerHTML = city;
     let sun = false;
     try {
@@ -53,17 +52,52 @@ class battery {
   updateBatteryStorage(amount) {
     if (this.storage < this.capacity) {
       this.storage += amount;
-      document.getElementById("battery-level").innerHTML = + this.storage.toFixed(2) + "kWh";
+      document.getElementById("battery-level").innerHTML = this.storage.toFixed(2) + "kWh";
     } else {
       document.getElementById("battery-level").textContent = "Battery is full";
     }
   }
 }
 
+class electrolyzer{
+  constructor(){
+    this.efficiency = 0,7; //%
+    this.storage = 0; //kg
+    this.capacity = 10; //kg
+    this.power = 200; //W
+
+   function produceHydrogen(){
+    if(charge.storage>0){
+      this.storage += 0.01 * this.efficiency * timeInHours;
+      document.getElementById("hydrogen-level").innerHTML = this.storage.toFixed(2) + "kg";
+    }
+    else if(this.storage < this.capacity){
+      document.getElementById("hydrogen-level").innerHTML = "Hydrogen Storage is full";
+    }
+    else{
+      document.getElementById("hydrogen-level").innerHTML = "Battery is empty";
+    }
+   }
+  }
+}
+
+
+class powersource{
+  constructor(){
+    this.totalpower = 1000; //W
+  }
+  async totalWattConsumption(){
+    let powerconsumption = this.totalpower - pem.power;
+    document.getElementById("power-consumption").innerHTML = powerconsumption.toFixed(2) + "W";
+  }
+}
 
 
 const pv = new photovoltaik();
 const charge = new battery();
+const pem = new electrolyzer();
+
+
 
 async function updateSimulation() {
   let sun = await pv.checkforSun();
@@ -71,8 +105,25 @@ async function updateSimulation() {
     let powergenerated = pv.efficiency * pv.power * timeInHours;
     charge.updateBatteryStorage(powergenerated);
 
-    // Sende den Batteriestand an den Server (Backend)
+    //Sende den Batteriestand an den Server (Backend)
     try {
+      const response = await fetch('http://localhost:3000/saveBatteryStatus', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ batteryLevel: charge.storage }),
+      });
+
+      if (response.ok) {
+        console.log('Battery level saved to DB');
+      } else {
+        console.error('Failed to save battery level');
+      }
+    } catch (error) {
+      console.error('Error sending battery level to server:', error);
+    }
+        try {
       const response = await fetch('http://localhost:3000/saveBatteryStatus', {
         method: 'POST',
         headers: {

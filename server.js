@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs"; //read and write files
 import { saveBatteryStatus } from './db.js'; //Verwende import
+import { saveWholeSalePrice } from "./db.js"; 
 
 
 //Correct `__dirname` for ES modules
@@ -41,7 +42,6 @@ try {
 app.use(express.static(path.join(__dirname, "public")));
 
 
-
 //Function to initialize the counter
 function initCounter() {
   let counterData = { counter: 0, lastUpdate: null };
@@ -59,7 +59,7 @@ function initCounter() {
     //Increment the counter and reset it after reaching 7
     counterData.counter = counterData.counter + 1;
 
-    if (counterData.counter > 6) {
+    if (counterData.counter > 7) {
       counterData.counter = 0;
       console.log("Counter reset");
     }
@@ -106,6 +106,28 @@ app.post("/saveBatteryStatus", async (req, res) => {
     res.status(500).json({ error: "Error saving battery status" });
   }
 });
+
+
+app.post("/saveWholeSalePrice", async (req, res) => {
+  const { timestamp, value } = req.body;
+
+  if (typeof timestamp !== "number") {
+    return res.status(400).json({ error: "Invalid timestamp" });
+  }
+  if (typeof value !== "number") {
+    return res.status(400).json({ error: "Invalid value" });
+  }
+
+  try {
+    // Save the timestamp and value in the database
+    await saveWholeSalePrice(timestamp, value);  // Only call saveWholeSalePrice once
+    res.status(200).json({ message: "Timestamp and value saved successfully" });
+  } catch (error) {
+    console.error("Error saving timestamp or value", error);
+    res.status(500).json({ error: "Error" });
+  }
+});
+
 
 //Endpoint: Provide API data
 app.get("/data", async (req, res) => {

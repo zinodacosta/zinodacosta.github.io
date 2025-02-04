@@ -5,9 +5,15 @@ body {
     color: #333;
     margin: 0;
     padding: 0;
+    padding-right: 20%;
     background-color: #f4f4f4;
 }
 
 h1, label, select, button {
     font-family: 'Roboto', sans-serif;
+}
+
+h2 {
+    font-size: 20px; /* Ändere die Schriftgröße nach Bedarf */
+    font-family: 'Roboto', sans-serif; /* Verwendet die Roboto-Schriftart */
 }
