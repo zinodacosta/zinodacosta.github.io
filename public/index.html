@@ -5,8 +5,7 @@
     <!-- Link to Google Fonts for Roboto -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <!-- Link to your custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 
@@ -21,14 +20,15 @@
     <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.0"></script>
-
-
+    <script type="module">
+        import { getLastWholeSalePrice } from './js/db.js'; // Pfad relativ zur HTML-Datei
+        // Dein Code hier
+      </script>
+    <!-- Only load simulation.js as a module in the head -->
 
 </head>
 
 <body>
-
-
     <h2>Wholesale Price</h2>
     <!-- Canvas for Chart -->
     <canvas id="myChart" width="400" height="70"></canvas>
@@ -52,10 +52,10 @@
         <canvas id="myChart2" width="400" height="85"></canvas>
 
         <!-- Hydrogen Eco System Section -->
-            <p>Battery Level: <span id="battery-level">0</span></p>
-            <p>PV Status: <span id="sun"></span></p>
-            <p>Location: <span id="location"></span></p>
-            <p>Total Power Consumption <span id="power-consumption"></span></p>
+        <p>Battery Level: <span id="battery-level">0</span></p>
+        <p>PV Status: <span id="sun"></span></p>
+        <p>Location: <span id="location"></span></p>
+        <p>Total Power Consumption <span id="power-consumption"></span></p>
     </div>
     <!-- OpenAPI Documentation -->
     <div id="openapi"></div>
@@ -79,9 +79,9 @@
         }
     </script>
 
-    <!--JavaScript -->
+    <!-- Only load main.js if needed -->
     <script src="js/main.js"></script>
-    <script src="js/simulation.js"></script>
+    <script type="module" src="/js/simulation.js"></script>
 </body>
 
 </html>

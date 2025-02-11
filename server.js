@@ -3,8 +3,8 @@ import fetch from "node-fetch"; //http req lib
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs"; //read and write files
-import { saveBatteryStatus } from './db.js'; //Verwende import
-import { saveWholeSalePrice } from "./db.js"; 
+import { saveBatteryStatus } from './public/js/db.js'; //Verwende import
+import { saveWholeSalePrice } from "./public/js/db.js"; 
 
 
 //Correct `__dirname` for ES modules
@@ -93,10 +93,6 @@ function getNextDayTimestamp() {
 app.post("/saveBatteryStatus", async (req, res) => {
   const { batteryLevel } = req.body;
 
-  if (typeof batteryLevel !== "number") {
-    return res.status(400).json({ error: "Invalid battery level" });
-  }
-
   try {
     //Speichere den Batteriestand in der Datenbank
     await saveBatteryStatus(batteryLevel);
@@ -108,23 +104,78 @@ app.post("/saveBatteryStatus", async (req, res) => {
 });
 
 
+//Funktion zum Abrufen und Speichern des Preises
+async function fetchAndSaveWholesalePrice() {
+
+
+  const adjustedTimestamp = getNextDayTimestamp();
+
+  try {
+    //Abruf der Wholesale-Preisliste von API
+    const response = await fetch(`https://www.smard.de/app/chart_data/4169/DE/4169_DE_hour_${adjustedTimestamp}.json`); //Ersetze mit der echten URL
+    if (!response.ok) {
+      throw new Error("Failed to fetch wholesale price from the external API");
+    }
+
+    //Extrahiere preis aus API-Antwort
+    const data = await response.json();
+
+    //richtiges format prüfen
+    if (data && data.series && Array.isArray(data.series)) {
+      //Wenn die Antwort eine series enthält und diese ein Array ist, verwenden wir die series
+      const series = data.series;
+
+      //Filtern der Einträge, bei denen der value nicht null ist
+      const validEntries = series.filter(entry => entry[1] !== null); //Angenommen, der Wert ist an index 1
+
+      //jetziger eintrag
+      const lastEntry = validEntries[validEntries.length - 1];
+      const price = lastEntry[1]; //Der Wert des letzten gültigen Eintrags
+      const priceTimestamp = lastEntry[0]; //Der Timestamp des letzten gültigen Eintrags
+
+      //speichern in db
+      await saveWholeSalePrice(priceTimestamp, price);
+
+    } else {
+      throw new Error("API response does not have a valid 'series' array");
+    }
+  } catch (error) {
+    console.error("Error fetching or saving wholesale price:", error);
+    throw new Error("Error saving price");
+  }
+}
+
+
+app.get("/get-wholesale-price", async (req, res) => {
+  try {
+    // Hole den gespeicherten Wert aus der Datenbank oder der Datei
+    const priceData = await getSavedWholesalePrice(); // Ersetze dies durch deinen tatsächlichen Abrufcode
+    res.json(priceData); // Schicke den Wert als JSON zurück
+  } catch (error) {
+    console.error("Error fetching wholesale price:", error);
+    res.status(500).json({ error: "Error fetching wholesale price" });
+  }
+});
+
+
 app.post("/saveWholeSalePrice", async (req, res) => {
   const { timestamp, value } = req.body;
+  
+  console.log("Received data:", { timestamp, value });  //Ausgabe, um zu sehen, ob die Daten korrekt ankommen
 
   if (typeof timestamp !== "number") {
-    return res.status(400).json({ error: "Invalid timestamp" });
+      return res.status(400).json({ error: "Invalid timestamp" });
   }
   if (typeof value !== "number") {
-    return res.status(400).json({ error: "Invalid value" });
+      return res.status(400).json({ error: "Invalid value" });
   }
 
   try {
-    //Save the timestamp and value in the database
-    await saveWholeSalePrice(timestamp, value);  //Only call saveWholeSalePrice once
-    res.status(200).json({ message: "Timestamp and value saved successfully" });
+      await saveWholeSalePrice(timestamp, value);  //Speichern in der Datenbank
+      res.status(200).json({ message: "Timestamp and value saved successfully" });
   } catch (error) {
-    console.error("Error saving timestamp or value", error);
-    res.status(500).json({ error: "Error" });
+      console.error("Error saving timestamp or value", error);
+      res.status(500).json({ error: "Error" });
   }
 });
 
@@ -201,8 +252,14 @@ app.get("/", (req, res) => {
   });
 });
 
-
-//Start the server
-app.listen(port, () => {
+//Start server
+app.listen(port, async () => {
   console.log(`Server running at http://localhost:${port}`);
+
+  //Rufe den Preis sofort beim Start des Servers ab und speichere ihn
+  try {
+    await fetchAndSaveWholesalePrice(); //Funktion, die die Preisabruf-Logik enthält
+  } catch (error) {
+    console.error("Error saving price on server startup:", error);
+  }
 });

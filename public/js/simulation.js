@@ -1,7 +1,5 @@
 let timeInHours = 1 / 3600; //1 Std in 1 Sekunde
-
-
-
+import { getLastWholeSalePrice } from "./db.js"; 
 
 class photovoltaik {
   constructor() {
@@ -11,7 +9,7 @@ class photovoltaik {
 
   async checkforSun() {
     const apiKey = "e7c7b0c5b06544339dd03539253001";
-    const city = "Los Angeles";
+    const city = "Luanda";
     document.getElementById("location").innerHTML = city;
     let sun = false;
     try {
@@ -61,23 +59,12 @@ class battery {
 
 class electrolyzer{
   constructor(){
-    this.efficiency = 0,7; //%
+    this.efficiency = 0.7; //%
     this.storage = 0; //kg
     this.capacity = 10; //kg
     this.power = 200; //W
 
-   function produceHydrogen(){
-    if(charge.storage>0){
-      this.storage += 0.01 * this.efficiency * timeInHours;
-      document.getElementById("hydrogen-level").innerHTML = this.storage.toFixed(2) + "kg";
-    }
-    else if(this.storage < this.capacity){
-      document.getElementById("hydrogen-level").innerHTML = "Hydrogen Storage is full";
-    }
-    else{
-      document.getElementById("hydrogen-level").innerHTML = "Battery is empty";
-    }
-   }
+
   }
 }
 
@@ -90,6 +77,18 @@ class powersource{
     let powerconsumption = this.totalpower - pem.power;
     document.getElementById("power-consumption").innerHTML = powerconsumption.toFixed(2) + "W";
   }
+  async produceHydrogen(){
+    if(charge.storage>0){
+      this.storage += 0.01 * this.efficiency * timeInHours;
+      document.getElementById("hydrogen-level").innerHTML = this.storage.toFixed(2) + "kg";
+    }
+    else if(this.storage < this.capacity){
+      document.getElementById("hydrogen-level").innerHTML = "Hydrogen Storage is full";
+    }
+    else{
+      document.getElementById("hydrogen-level").innerHTML = "Battery is empty";
+    }
+   }
 }
 
 
@@ -104,8 +103,24 @@ async function updateSimulation() {
   if (sun) {
     let powergenerated = pv.efficiency * pv.power * timeInHours;
     charge.updateBatteryStorage(powergenerated);
+  }
+    // Hole den letzten Wholesale-Preis von der Datenbank
+    try {
+      const lastPriceData = await getLastWholeSalePrice();
+      const lastPrice = lastPriceData.value;
+      const lastTimestamp = lastPriceData.timestamp;
 
-    //Sende den Batteriestand an den Server (Backend)
+      console.log('Last Wholesale Price:', lastPrice);
+      console.log('Timestamp:', lastTimestamp);
+
+      // Hier kannst du den Wert weiter verwenden, z.B. in einer Berechnung oder Anzeige
+      document.getElementById("wholesale-price").innerHTML = lastPrice.toFixed(2) + " €";
+
+    } catch (error) {
+      console.error('Error fetching last wholesale price:', error);
+    }
+
+    // Sende den Batteriestand an den Server
     try {
       const response = await fetch('http://localhost:3000/saveBatteryStatus', {
         method: 'POST',
@@ -123,27 +138,7 @@ async function updateSimulation() {
     } catch (error) {
       console.error('Error sending battery level to server:', error);
     }
-        try {
-      const response = await fetch('http://localhost:3000/saveBatteryStatus', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ batteryLevel: charge.storage }),
-      });
 
-      if (response.ok) {
-        console.log('Battery level saved to DB');
-      } else {
-        console.error('Failed to save battery level');
-      }
-    } catch (error) {
-      console.error('Error sending battery level to server:', error);
-    }
-  }
 }
-
-
-
 
 setInterval(updateSimulation, 1000);
