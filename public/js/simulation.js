@@ -1,5 +1,5 @@
 let timeInHours = 1 / 3600; //1 Std in 1 Sekunde
-import { getLastWholeSalePrice } from "./db.js"; 
+
 
 class photovoltaik {
   constructor() {
@@ -96,7 +96,31 @@ const pv = new photovoltaik();
 const charge = new battery();
 const pem = new electrolyzer();
 
+async function getLastWholeSalePrice(){
+  try{
+    const response = await fetch("http://localhost:3000/get-wholesale-price");
+    const data = await response.json();
+    return data.value;
+  }catch(error){
+    console.error("Error fetching Last Price", error);
+    return null;
+  }
 
+}
+
+class buyingElectricity{
+constructor(){
+  this.electricityPrice = null;
+  this.priceCheck();
+}
+async priceCheck(){
+  this.electricityPrice = await getLastWholeSalePrice();
+  console.log("Preis in der Simulation geladen", this.electricityPrice);
+  document.getElementById("current-price").innerHTML = this.electricityPrice + "€/MWh";
+}
+
+}
+const buyer = new buyingElectricity;
 
 async function updateSimulation() {
   let sun = await pv.checkforSun();
@@ -104,21 +128,7 @@ async function updateSimulation() {
     let powergenerated = pv.efficiency * pv.power * timeInHours;
     charge.updateBatteryStorage(powergenerated);
   }
-    // Hole den letzten Wholesale-Preis von der Datenbank
-    try {
-      const lastPriceData = await getLastWholeSalePrice();
-      const lastPrice = lastPriceData.value;
-      const lastTimestamp = lastPriceData.timestamp;
 
-      console.log('Last Wholesale Price:', lastPrice);
-      console.log('Timestamp:', lastTimestamp);
-
-      // Hier kannst du den Wert weiter verwenden, z.B. in einer Berechnung oder Anzeige
-      document.getElementById("wholesale-price").innerHTML = lastPrice.toFixed(2) + " €";
-
-    } catch (error) {
-      console.error('Error fetching last wholesale price:', error);
-    }
 
     // Sende den Batteriestand an den Server
     try {

@@ -20,10 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.0"></script>
-    <script type="module">
-        import { getLastWholeSalePrice } from './js/db.js'; // Pfad relativ zur HTML-Datei
-        // Dein Code hier
-      </script>
+    <script type="module" src="/js/simulation.js"></script>
     <!-- Only load simulation.js as a module in the head -->
 
 </head>
@@ -55,7 +52,8 @@
         <p>Battery Level: <span id="battery-level">0</span></p>
         <p>PV Status: <span id="sun"></span></p>
         <p>Location: <span id="location"></span></p>
-        <p>Total Power Consumption <span id="power-consumption"></span></p>
+        <p>Total Power Consumption: <span id="power-consumption"></span></p>
+        <p>Current Electricity Price: <span id="current-price"></span></p>
     </div>
     <!-- OpenAPI Documentation -->
     <div id="openapi"></div>
@@ -81,7 +79,7 @@
 
     <!-- Only load main.js if needed -->
     <script src="js/main.js"></script>
-    <script type="module" src="/js/simulation.js"></script>
+
 </body>
 
 </html>

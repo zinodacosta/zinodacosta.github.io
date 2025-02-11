@@ -5,6 +5,7 @@ import path from "path";
 import fs from "fs"; //read and write files
 import { saveBatteryStatus } from './public/js/db.js'; //Verwende import
 import { saveWholeSalePrice } from "./public/js/db.js"; 
+import { getLastWholeSalePrice } from "./public/js/db.js"; 
 
 
 //Correct `__dirname` for ES modules
@@ -103,13 +104,28 @@ app.post("/saveBatteryStatus", async (req, res) => {
   }
 });
 
+function getCurrentHourTimestamp() {
+  const now = new Date(); // Aktuelle Zeit
+
+  // Setze Minuten, Sekunden und Millisekunden auf null
+  now.setMinutes(0, 0, 0);
+
+  // Wenn die aktuelle Minute nicht 0 ist, runde auf die nächste Stunde auf
+  if (now.getMinutes() !== 0) {
+    now.setHours(now.getHours() + 1);
+  }
+
+  // Hole den Timestamp der nächsten vollen Stunde
+  const roundedTimestamp = now.getTime();
+  console.log("Rounded Current Hour Timestamp:", roundedTimestamp);
+  return roundedTimestamp;
+}
 
 //Funktion zum Abrufen und Speichern des Preises
 async function fetchAndSaveWholesalePrice() {
-
-
   const adjustedTimestamp = getNextDayTimestamp();
-
+  const currentTimestamp = getCurrentHourTimestamp();
+  
   try {
     //Abruf der Wholesale-Preisliste von API
     const response = await fetch(`https://www.smard.de/app/chart_data/4169/DE/4169_DE_hour_${adjustedTimestamp}.json`); //Ersetze mit der echten URL
@@ -126,7 +142,7 @@ async function fetchAndSaveWholesalePrice() {
       const series = data.series;
 
       //Filtern der Einträge, bei denen der value nicht null ist
-      const validEntries = series.filter(entry => entry[1] !== null); //Angenommen, der Wert ist an index 1
+      const validEntries = series.filter(entry => entry[1] !== null && entry[0] === currentTimestamp); // Der Wert ist an index 1 und Timestamp an index 0
 
       //jetziger eintrag
       const lastEntry = validEntries[validEntries.length - 1];
@@ -149,7 +165,7 @@ async function fetchAndSaveWholesalePrice() {
 app.get("/get-wholesale-price", async (req, res) => {
   try {
     // Hole den gespeicherten Wert aus der Datenbank oder der Datei
-    const priceData = await getSavedWholesalePrice(); // Ersetze dies durch deinen tatsächlichen Abrufcode
+    const priceData = await getLastWholeSalePrice();
     res.json(priceData); // Schicke den Wert als JSON zurück
   } catch (error) {
     console.error("Error fetching wholesale price:", error);
@@ -161,7 +177,6 @@ app.get("/get-wholesale-price", async (req, res) => {
 app.post("/saveWholeSalePrice", async (req, res) => {
   const { timestamp, value } = req.body;
   
-  console.log("Received data:", { timestamp, value });  //Ausgabe, um zu sehen, ob die Daten korrekt ankommen
 
   if (typeof timestamp !== "number") {
       return res.status(400).json({ error: "Invalid timestamp" });
