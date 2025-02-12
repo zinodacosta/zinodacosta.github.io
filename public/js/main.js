@@ -3,27 +3,30 @@ let graphTypesForSecondChart = ["actualelectricityconsumption"]; //Default secon
 let myChartInstance; //Store the first chart instance
 let myChartInstance2 = null; //Store the second chart instance
 let graphIdentifiers; //Will store the graphIdentifiers object
-
+let batteryData = []; // Speichert die Batterie-Werte
+let batteryChartInstance = null; // Speichert die Chart-Instanz
 
 
 //Define the vertical line plugin for the first chart
 const verticalLinePlugin1 = {
     id: "verticalLine1",
     afterDraw(chart) {
-        if (chart.tooltip._active && chart.tooltip._active.length) {
-            const ctx = chart.ctx;
-            const activePoint = chart.tooltip._active[0]; //Get the active tooltip point
-            const x = activePoint.element.x; //X-coordinate of the point
-
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(x, chart.chartArea.top); //Start from the top of the chart area
-            ctx.lineTo(x, chart.chartArea.bottom); //Draw to the bottom of the chart area
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = "rgba(0, 0, 0, 0.8)"; //Customize the color of the line
-            ctx.stroke();
-            ctx.restore();
+        if (!chart.tooltip || !chart.tooltip._active || chart.tooltip._active.length === 0) {
+            return; // Verhindert Fehler, falls kein Tooltip aktiv ist
         }
+    
+        const ctx = chart.ctx;
+        const activePoint = chart.tooltip._active[0]; // Get the active tooltip point
+        const x = activePoint.element.x; // X-Koordinate des Punktes
+    
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x, chart.chartArea.top); // Linie von oben ...
+        ctx.lineTo(x, chart.chartArea.bottom); // ... nach unten zeichnen
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.8)"; // Farbe anpassen
+        ctx.stroke();
+        ctx.restore();
     }
 };
 
@@ -31,21 +34,22 @@ const verticalLinePlugin1 = {
 const verticalLinePlugin2 = {
     id: "verticalLine2",
     afterDraw(chart) {
-        //Check if the tooltip is active and has at least one active point
-        if (chart.tooltip && chart.tooltip._active && chart.tooltip._active.length) {
-            const ctx = chart.ctx;
-            const activePoint = chart.tooltip._active[0]; //Get the active tooltip point
-            const x = activePoint.element.x; //X-coordinate of the point
-
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(x, chart.chartArea.top); //Start from the top of the chart area
-            ctx.lineTo(x, chart.chartArea.bottom); //Draw to the bottom of the chart area
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = "rgba(0, 0, 0, 0.8)"; //Customize the color of the line
-            ctx.stroke();
-            ctx.restore();
+        if (!chart.tooltip || !chart.tooltip._active || chart.tooltip._active.length === 0) {
+            return; // Verhindert Fehler, falls kein Tooltip aktiv ist
         }
+    
+        const ctx = chart.ctx;
+        const activePoint = chart.tooltip._active[0]; // Get the active tooltip point
+        const x = activePoint.element.x; // X-Koordinate des Punktes
+    
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x, chart.chartArea.top); // Linie von oben ...
+        ctx.lineTo(x, chart.chartArea.bottom); // ... nach unten zeichnen
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.8)"; // Farbe anpassen
+        ctx.stroke();
+        ctx.restore();
     }
 };
 
@@ -359,8 +363,84 @@ document.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
     });
 });
 
+// Funktion zum Erstellen des Graphen
+function createBatteryChart() {
+    const ctx = document.getElementById("batteryChart").getContext("2d");
+
+    batteryChartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: [],
+            datasets: [{
+                label: "Battery Level (%)",
+                data: [],
+                borderColor: "rgb(255, 165, 0)", // Orange
+                backgroundColor: "rgba(255, 165, 0, 0.5)",
+                tension: 0.1,
+                fill: true,
+                pointRadius: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: true }
+            },
+            scales: {
+                x: {
+                    type: "time",
+                    time: {
+                        unit: "second",
+                        tooltipFormat: "HH:mm:ss",
+                        displayFormats: { second: "HH:mm:ss" }
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: "kWh"
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 5
+                }
+            }
+        }
+    });
+}
+
+// Funktion zum Aktualisieren des Graphen
+function updateBatteryChart(newBatteryLevel) {
+    const now = new Date();
+
+    batteryData.push({ x: now, y: newBatteryLevel });
+
+    if (batteryData.length > 60) {
+        batteryData.shift(); // Entferne alte Werte (halte nur die letzten 60 Sekunden)
+    }
+
+    batteryChartInstance.data.labels = batteryData.map(entry => entry.x);
+    batteryChartInstance.data.datasets[0].data = batteryData;
+    batteryChartInstance.update();
+}
+
+// Funktion, die jede Sekunde den neuen Batterie-Stand holt und aktualisiert
+function startBatteryMonitoring() {
+    createBatteryChart();
+
+    setInterval(() => {
+        const batteryLevel = parseFloat(document.getElementById("battery-level").textContent);
+        if (!isNaN(batteryLevel)) {
+            updateBatteryChart(batteryLevel);
+        }
+    }, 1000);
+}
+
+
 //Initial data fetch on page load
 window.onload = async () => {
     await loadGraphIdentifiers();
     fetchData();
+    startBatteryMonitoring();
+    
 };

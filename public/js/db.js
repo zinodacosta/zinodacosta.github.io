@@ -23,6 +23,40 @@ export async function saveBatteryStatus(batteryLevel) {
   }
 }
 
+export async function getLastBatteryStatus() {
+  try {
+    const queryApi = client.getQueryApi(org);
+    const query = `from(bucket: "Simulation")
+      |> range(start: -1d)
+      |> filter(fn: (r) => r._measurement == "battery" and r._field == "level")
+      |> sort(columns: ["_time"], desc: true)
+      |> limit(n: 1)`;
+
+    let lastBatteryLevel = null;
+    let lastTimestamp = null;
+
+    return new Promise((resolve, reject) => {
+      queryApi.queryRows(query, {
+        next(row, tableMeta) {
+          const data = tableMeta.toObject(row);
+          lastBatteryLevel = data._value;
+          lastTimestamp = data._time;
+        },
+        complete() {
+          resolve({ level: lastBatteryLevel, timestamp: lastTimestamp });
+        },
+        error(error) {
+          console.error("Error fetching last battery status:", error);
+          reject(error);
+        }
+      });
+    });
+  } catch (error) {
+    console.error("Error in getLastBatteryStatus:", error);
+    throw error;
+  }
+}
+
 // Wholesale-Preis speichern
 export async function saveWholeSalePrice(timestamp, value) {
   const point = new Point("price")

@@ -3,7 +3,7 @@ import fetch from "node-fetch"; //http req lib
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs"; //read and write files
-import { saveBatteryStatus } from './public/js/db.js'; //Verwende import
+import { saveBatteryStatus, getLastBatteryStatus } from './public/js/db.js'; //Verwende import
 import { saveWholeSalePrice } from "./public/js/db.js"; 
 import { getLastWholeSalePrice } from "./public/js/db.js"; 
 
@@ -60,7 +60,7 @@ function initCounter() {
     //Increment the counter and reset it after reaching 7
     counterData.counter = counterData.counter + 1;
 
-    if (counterData.counter > 7) {
+    if (counterData.counter > 6) {
       counterData.counter = 0;
       console.log("Counter reset");
     }
@@ -267,11 +267,25 @@ app.get("/", (req, res) => {
   });
 });
 
+// Route zum Abrufen des letzten Batterielevels
+app.get("/getBatteryStatus", async (req, res) => {
+  try {
+    const lastBatteryStatus = await getLastBatteryStatus();
+    if (!lastBatteryStatus) {
+      return res.status(404).json({ error: "No battery data found" });
+    }
+    res.status(200).json(lastBatteryStatus);
+  } catch (error) {
+    console.error("Error fetching battery status:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 //Start server
 app.listen(port, async () => {
   console.log(`Server running at http://localhost:${port}`);
 
-  //Rufe den Preis sofort beim Start des Servers ab und speichere ihn
+  //price check on startup and save to db
   try {
     await fetchAndSaveWholesalePrice(); //Funktion, die die Preisabruf-Logik enthält
   } catch (error) {
