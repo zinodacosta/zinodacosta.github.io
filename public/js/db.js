@@ -17,12 +17,27 @@ export async function saveBatteryStatus(batteryLevel) {
     const writeApiBattery = client.getWriteApi(org, "Simulation");
     writeApiBattery.writePoint(point);
     await writeApiBattery.flush();
-    console.log("Battery status saved:", batteryLevel.toFixed(2), "kWh");
+    //console.log("Battery status saved:", batteryLevel.toFixed(2), "kWh");
   } catch (error) {
     console.error("Error saving battery status:", error);
   }
 }
 
+// Hydrogenspeicher speichern
+export async function saveHydrogenStatus(hydrogenLevel) {
+  const point = new Point("Hydrogen Storage").floatField("level", hydrogenLevel);
+
+  try {
+    const writeApiHydrogen = client.getWriteApi(org, "Simulation");
+    writeApiHydrogen.writePoint(point);
+    await writeApiHydrogen.flush();
+   // console.log("Hydrogen status saved:", hydrogenLevel.toFixed(2), "g");
+  } catch (error) {
+    console.error("Error saving hydrogen status:", error);
+  }
+}
+
+//Query battery from db
 export async function getLastBatteryStatus() {
   try {
     const queryApi = client.getQueryApi(org);
@@ -56,6 +71,42 @@ export async function getLastBatteryStatus() {
     throw error;
   }
 }
+
+//Query hydrogen lvl from db
+export async function getLastHydrogenStatus() {
+  try {
+    const queryApi = client.getQueryApi(org);
+    const query = `from(bucket: "Simulation")
+      |> range(start: -1d)
+      |> filter(fn: (r) => r._measurement == "Hydrogen Storage" and r._field == "level")
+      |> sort(columns: ["_time"], desc: true)
+      |> limit(n: 1)`;
+
+    let lasthydrogenLevel = null;
+    let lastTimestamp = null;
+
+    return new Promise((resolve, reject) => {
+      queryApi.queryRows(query, {
+        next(row, tableMeta) {
+          const data = tableMeta.toObject(row);
+          lasthydrogenLevel = data._value;
+          lastTimestamp = data._time;
+        },
+        complete() {
+          resolve({ level: lasthydrogenLevel, timestamp: lastTimestamp });
+        },
+        error(error) {
+          console.error("Error fetching last hydrogen status:", error);
+          reject(error);
+        }
+      });
+    });
+  } catch (error) {
+    console.error("Error in getLastHydrogenStatus:", error);
+    throw error;
+  }
+}
+
 
 // Wholesale-Preis speichern
 export async function saveWholeSalePrice(timestamp, value) {

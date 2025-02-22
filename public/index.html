@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <!-- Link to Google Fonts for Roboto -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
     <!-- Link to your custom CSS -->
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css" />
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Protonik Hydrogen Dashboard</title>
 
     <!-- Chart.js Libraries -->
@@ -21,70 +23,79 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.0"></script>
     <script type="module" src="/js/simulation.js"></script>
+    <script type="module" src="main.js"></script>
     <!-- Only load simulation.js as a module in the head -->
+  </head>
 
-</head>
-
-<body>
+  <body>
     <h2>Wholesale Price</h2>
     <!-- Canvas for Chart -->
     <canvas id="myChart" width="400" height="70"></canvas>
 
     <div id="graph-selector2">
-        <h2 id="chart2-title">Actual Electricity Consumption</h2>
-        <label for="graph-selector2">Select Graph Types</label>
+      <h2 id="chart2-title">Actual Electricity Consumption</h2>
+      <label for="graph-selector2">Select Graph Types</label>
 
-        <!--Creating Option Tool for second Graph-->
-        <input type="checkbox" id="browncoal" value="browncoal"> Brown Coal
-        <input type="checkbox" id="biomass" value="biomass"> Biomass
-        <input type="checkbox" id="windoffshore" value="windoffshore"> Wind Offshore
-        <input type="checkbox" id="windonshore" value="windonshore"> Wind Onshore
-        <input type="checkbox" id="hydroelectric" value="hydroelectric"> Hydroelectric
-        <input type="checkbox" id="naturalgas" value="naturalgas"> Natural Gas
-        <input type="checkbox" id="blackcoal" value="blackcoal"> Black Coal
-        <input type="checkbox" id="photovoltaik" value="photovoltaik"> Photovoltaik
-        <input type="checkbox" id="otherconventional" value="otherconventional"> Other Conventional
-        <input type="checkbox" id="otherrenewable" value="otherrenewable"> Other Renewable
+      <!--Creating Option Tool for second Graph-->
+      <input type="checkbox" id="browncoal" value="browncoal" /> Brown Coal
+      <input type="checkbox" id="biomass" value="biomass" /> Biomass
+      <input type="checkbox" id="windoffshore" value="windoffshore" /> Wind
+      Offshore
+      <input type="checkbox" id="windonshore" value="windonshore" /> Wind
+      Onshore
+      <input type="checkbox" id="hydroelectric" value="hydroelectric" />
+      Hydroelectric
+      <input type="checkbox" id="naturalgas" value="naturalgas" /> Natural Gas
+      <input type="checkbox" id="blackcoal" value="blackcoal" /> Black Coal
+      <input type="checkbox" id="photovoltaik" value="photovoltaik" />
+      Photovoltaik
+      <input type="checkbox" id="otherconventional" value="otherconventional" />
+      Other Conventional
+      <input type="checkbox" id="otherrenewable" value="otherrenewable" /> Other
+      Renewable
 
-        <canvas id="myChart2" width="400" height="85"></canvas>
+      <canvas id="myChart2" width="400" height="85"></canvas>
 
-        <!-- Hydrogen Eco System Section -->
-        <p>Battery Level: <span id="battery-level">0</span></p>
-        <p>PV Status: <span id="sun"></span></p>
-        <p>Location: <span id="location"></span></p>
-        <p>Current Electricity Price: <span id="current-price"></span></p>
-        <span id="buying-price"></span>
-        <button id="sell-button">Sell 0.1kWh</button>
-        <button id="buy-button">Buy 0.1kWh</button>
-        <p>Money in Account: <span id="money"></span></p>
-        <h2>Battery Level</h2>
-<canvas id="batteryChart" width="400" height="70"></canvas>
+      <!-- Hydrogen Eco System Section -->
+      <h2>Hydrogen Eco Simulation</h2>
+      <p>Battery Level: <span id="battery-level">0</span></p>
+      <p>Hydrogen Level <span id="hydrogen-level">0</span></p>
+      <p>PV Status: <span id="sun"></span></p>
+      <p>Location: <span id="location"></span></p>
+      <p>Current Electricity Price: <span id="current-price"></span></p>
+      <button id="sell-button">Sell 0.1kWh</button>
+      <button id="buy-button">Buy 0.1kWh</button>
+      <button id="convert-to-hydrogen">Electricity -> Hydrogen</button>
+      <button id="convert-to-electricity">Hydrogen -> Electricity</button>
+      <p>Money in Account: <span id="money"></span></p>
+      <h2>Battery Chart</h2>
+      <canvas id="batteryChart" width="400" height="70"></canvas>
+      <h2>Hydrogen Chart</h2>
+      <canvas id="hydrogenChart" width="400" height="70"></canvas>
     </div>
     <!-- OpenAPI Documentation -->
     <div id="openapi"></div>
 
     <script>
-        window.onload = function () {
-            const ui = SwaggerUIBundle({
-                url: "openapi.yaml",
-                dom_id: "#openapi",
-                requestInterceptor: function (req) {
-                    if (this.url !== "openapi.yaml") {
-                        console.log(req);
-                        var pathname = new URL(req.url).pathname;
-                        console.log(pathname);
-                        req.url = "https://smard.api.proxy.bund.dev" + pathname;
-                        console.log(this.url);
-                    }
-                    return req;
-                },
-            });
-        }
+      window.onload = function () {
+        const ui = SwaggerUIBundle({
+          url: "openapi.yaml",
+          dom_id: "#openapi",
+          requestInterceptor: function (req) {
+            if (this.url !== "openapi.yaml") {
+              console.log(req);
+              var pathname = new URL(req.url).pathname;
+              console.log(pathname);
+              req.url = "https://smard.api.proxy.bund.dev" + pathname;
+              console.log(this.url);
+            }
+            return req;
+          },
+        });
+      };
     </script>
 
     <!-- Only load main.js if needed -->
     <script src="js/main.js"></script>
-
-</body>
-
+  </body>
 </html>

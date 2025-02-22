@@ -5,6 +5,8 @@ let myChartInstance2 = null; //Store the second chart instance
 let graphIdentifiers; //Will store the graphIdentifiers object
 let batteryData = []; // Speichert die Batterie-Werte
 let batteryChartInstance = null; // Speichert die Chart-Instanz
+let hydrogenData = [];
+let hydrogenChartInstance = null;
 
 
 //Define the vertical line plugin for the first chart
@@ -409,6 +411,8 @@ function createBatteryChart() {
     });
 }
 
+
+
 // Funktion zum Aktualisieren des Graphen
 function updateBatteryChart(newBatteryLevel) {
     const now = new Date();
@@ -416,7 +420,7 @@ function updateBatteryChart(newBatteryLevel) {
     batteryData.push({ x: now, y: newBatteryLevel });
 
     if (batteryData.length > 60) {
-        batteryData.shift(); // Entferne alte Werte (halte nur die letzten 60 Sekunden)
+        batteryData.shift();
     }
 
     batteryChartInstance.data.labels = batteryData.map(entry => entry.x);
@@ -424,9 +428,73 @@ function updateBatteryChart(newBatteryLevel) {
     batteryChartInstance.update();
 }
 
+
+
+
+// Funktion zum Erstellen des Graphen
+function createHydrogenChart() {
+    const ctx = document.getElementById("hydrogenChart").getContext("2d");
+
+    hydrogenChartInstance = new Chart(ctx, {  // Hier Korrektur von batteryChartInstance zu hydrogenChartInstance
+        type: "line",
+        data: {
+            labels: [],
+            datasets: [{
+                label: "Hydrogen Level (%)",
+                data: [],
+                borderColor: "rgb(72, 255, 0)",
+                backgroundColor: "rgba(0, 255, 34, 0.5)",
+                tension: 0.1,
+                fill: true,
+                pointRadius: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: true }
+            },
+            scales: {
+                x: {
+                    type: "time",
+                    time: {
+                        unit: "second",
+                        tooltipFormat: "HH:mm:ss",
+                        displayFormats: { second: "HH:mm:ss" }
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: "g"
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 500
+                }
+            }
+        }
+    });
+}
+
+function updateHydrogenChart(newHydrogenLevel) {
+    const now = new Date();
+
+    hydrogenData.push({ x: now, y: newHydrogenLevel });
+
+    if (hydrogenData.length > 60) {
+        hydrogenData.shift(); // Entferne alte Werte (halte nur die letzten 60 Sekunden)
+    }
+
+    hydrogenChartInstance.data.labels = hydrogenData.map(entry => entry.x);
+    hydrogenChartInstance.data.datasets[0].data = hydrogenData;
+    hydrogenChartInstance.update();
+}
+
 // Funktion, die jede Sekunde den neuen Batterie-Stand holt und aktualisiert
-function startBatteryMonitoring() {
+function startMonitoring() {
     createBatteryChart();
+    createHydrogenChart();
 
     setInterval(() => {
         const batteryLevel = parseFloat(document.getElementById("battery-level").textContent);
@@ -434,13 +502,19 @@ function startBatteryMonitoring() {
             updateBatteryChart(batteryLevel);
         }
     }, 1000);
+    setInterval(() => {
+        const hydrogenLevel = parseFloat(document.getElementById("hydrogen-level").textContent);
+        if (!isNaN(hydrogenLevel)) {
+            updateHydrogenChart(hydrogenLevel);
+        }
+    }, 1000);
 }
-
 
 //Initial data fetch on page load
 window.onload = async () => {
     await loadGraphIdentifiers();
-    startBatteryMonitoring();
+    startMonitoring();
+    
     fetchData();
 
     

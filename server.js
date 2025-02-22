@@ -3,7 +3,7 @@ import fetch from "node-fetch"; //http req lib
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs"; //read and write files
-import { saveBatteryStatus, getLastBatteryStatus } from './public/js/db.js'; //Verwende import
+import { saveBatteryStatus, getLastBatteryStatus, saveHydrogenStatus, getLastHydrogenStatus } from './public/js/db.js'; //Verwende import
 import { saveWholeSalePrice } from "./public/js/db.js"; 
 import { getLastWholeSalePrice } from "./public/js/db.js"; 
 
@@ -101,6 +101,19 @@ app.post("/saveBatteryStatus", async (req, res) => {
   } catch (error) {
     console.error("Error saving battery status:", error);
     res.status(500).json({ error: "Error saving battery status" });
+  }
+});
+
+app.post("/saveHydrogenStatus", async (req, res) => {
+  const { hydrogenLevel } = req.body;
+
+  try {
+    //Speichere den Batteriestand in der Datenbank
+    await saveHydrogenStatus(hydrogenLevel);
+    res.status(200).json({ message: "Hydrogen status saved successfully" });
+  } catch (error) {
+    console.error("Error saving hydrogen status:", error);
+    res.status(500).json({ error: "Error saving hydrogen status" });
   }
 });
 
@@ -277,6 +290,20 @@ app.get("/getBatteryStatus", async (req, res) => {
     res.status(200).json(lastBatteryStatus);
   } catch (error) {
     console.error("Error fetching battery status:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Route zum Abrufen des letzten Hydrogenlevels
+app.get("/getHydrogenStatus", async (req, res) => {
+  try {
+    const lastHydrogenStatus = await getLastHydrogenStatus();
+    if (!lastHydrogenStatus) {
+      return res.status(404).json({ error: "No hydrogen data found" });
+    }
+    res.status(200).json(lastHydrogenStatus);
+  } catch (error) {
+    console.error("Error fetching hydrogen status:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
