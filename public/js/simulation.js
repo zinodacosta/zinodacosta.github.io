@@ -47,14 +47,14 @@ class battery {
   }
 
   updateBatteryStorage(amount) {
-    if (this.storage < this.capacity) {
-      this.storage += amount;
-      document.getElementById("battery-level").innerHTML =
+    if (amount > 0 && this.storage < this.capacity) {
+        this.storage += amount;
+    } else if (amount < 0 && this.storage > 0) {  // Jetzt wird auch Entladen erlaubt
+        this.storage += amount;
+    }
+    document.getElementById("battery-level").innerHTML =
         this.storage.toFixed(2) + "kWh";
-    }// else {
-      //document.getElementById("battery-level").textContent = "Battery is full";
-    //}
-  }
+}
 }
 
 class fuelcell {
@@ -117,10 +117,10 @@ async function fetchBatteryLevel() {
       charge.storage = data.level; // Batterie-Speicher synchronisieren
       document.getElementById(
         "battery-level"
-      ).innerText = `Batterie: ${data.level.toFixed(2)} kWh`;
+      ).innerText = `Battery: ${data.level.toFixed(2)} kWh`;
     }
   } catch (error) {
-    console.error("Fehler beim Abrufen des Batterielevels:", error);
+    console.error("error:", error);
   }
 }
 
@@ -165,7 +165,7 @@ class tradeElectricity {
   }
   
   async buyElectricity() {
-    if (charge.storage < charge.capacity) {
+    if (charge.storage +0.09 < charge.capacity) {
       if (this.electricityPrice === null || isNaN(this.electricityPrice)) {
         await this.priceCheck();
         return;
@@ -174,6 +174,9 @@ class tradeElectricity {
       this.money -= this.electricityPrice * 0.1;
       charge.updateBatteryStorage(0.1);
       document.getElementById("money").innerHTML = " : " + this.money.toFixed(2) + " €";
+    }
+    else{
+      document.getElementById("money").innerHTML = "Can't buy battery is full";
     }
   }
   async sellElectricity() {

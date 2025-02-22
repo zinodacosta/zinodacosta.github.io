@@ -440,7 +440,8 @@ function startBatteryMonitoring() {
 //Initial data fetch on page load
 window.onload = async () => {
     await loadGraphIdentifiers();
-    fetchData();
     startBatteryMonitoring();
+    fetchData();
+
     
 };
