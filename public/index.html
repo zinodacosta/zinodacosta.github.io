@@ -23,7 +23,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.0"></script>
     <script type="module" src="/js/simulation.js"></script>
-    <script type="module" src="main.js"></script>
+    <script type="module" src="/js/main.js"></script>
+
     <!-- Only load simulation.js as a module in the head -->
   </head>
 
@@ -63,8 +64,8 @@
           <h3>Battery</h3>
           <p>Battery Level: <span id="battery-level">0</span></p>
           <label for="battery-efficiency">Battery Efficiency:</label>
-          <input type="range" id="battery-efficiency" step="0.01" min="0.01" max="1">
-          <span id="battery-efficiency-value">1.00</span>
+          <input type="range" id="battery-efficiency" step="1" min="1" max="100">
+          <span id="battery-efficiency-value">100</span>
           <label for="battery-capacity">Battery Capacity:</label>
           <input type="range" id="battery-capacity" step="1" min="1" max="10000">
           <span id="battery-capacity-value">10 kWh</span>
@@ -74,7 +75,7 @@
           <h3>Electrolyzer</h3>
           <p>Hydrogen Level: <span id="hydrogen-level">0</span></p>
           <label for="electrolyzer-efficiency">Electrolyzer Efficiency:</label>
-          <input type="range" id="electrolyzer-efficiency" step="0.01" min="0.01" max="1">
+          <input type="range" id="electrolyzer-efficiency" step="1" min="1" max="100">
           <span id="electrolyzer-efficiency-value">1</span>
           <label for="electrolyzer-power">Electrolyzer Power:</label>
           <input type="range" id="electrolyzer-power" step="1" min="100" max="10000">
@@ -85,8 +86,8 @@
           <h3>Fuel Cell</h3>
           <p></p>
           <label for="fuelcell-efficiency">Fuelcell Efficiency:</label>
-          <input type="range" id="fuelcell-efficiency" step="0.01" min="0.01" max="1">
-          <span id="fuelcell-efficiency-value">1</span>
+          <input type="range" id="fuelcell-efficiency" step="1" min="1" max="100">
+          <span id="fuelcell-efficiency-value">100</span>
           <label for="fuelcell-power">Fuelcell Power:</label>
           <input type="range" id="fuelcell-power" step="1" min="100" max="10000">
           <span id="fuelcell-power-value">200</span>
@@ -94,8 +95,8 @@
         <div class="eco-item" id="photovoltaik">
           <h3>Photovoltaik</h3>
           <label for="PV-efficiency">PV Efficiency:</label>
-          <input type="range" id="PV-efficiency" step="0.01" min="0.01" max="1">
-          <span id="PV-efficiency-value">1</span>
+          <input type="range" id="PV-efficiency" step="1" min="1" max="100">
+          <span id="PV-efficiency-value">20</span>
     
     
           <label for="PV-power">Photovoltaik Power:</label>
@@ -136,9 +137,9 @@
       <span id="speed-factor-value">1x</span>
       <button id="reset" class="button regular">Reset Simulation</button>
 
-      <h2>Battery Chart</h2>
+      <h2>Battery Storage</h2>
       <canvas id="batteryChart" width="400" height="70"></canvas>
-      <h2>Hydrogen Chart</h2>
+      <h2>Hydrogen Storage</h2>
       <canvas id="hydrogenChart" width="400" height="70"></canvas>
     </div>
     <!-- OpenAPI Documentation -->

@@ -417,14 +417,24 @@ function createBatteryChart() {
 function updateBatteryChart(newBatteryLevel) {
     const now = new Date();
 
+    // Add the new data point
     batteryData.push({ x: now, y: newBatteryLevel });
 
+    // Only shift if length exceeds 60
     if (batteryData.length > 60) {
-        batteryData.shift();
+        batteryData.shift();  // Remove the oldest data point if the array exceeds 60 entries
     }
 
+    // If chart hasn't been initialized, create it
+    if (!batteryChartInstance) {
+        createBatteryChart();
+    }
+
+    // Update the chart data
     batteryChartInstance.data.labels = batteryData.map(entry => entry.x);
-    batteryChartInstance.data.datasets[0].data = batteryData;
+    batteryChartInstance.data.datasets[0].data = batteryData.map(entry => entry.y); // Ensure correct y values
+
+    // Re-render the chart
     batteryChartInstance.update();
 }
 
@@ -470,7 +480,7 @@ function createHydrogenChart() {
                         text: "g"
                     },
                     suggestedMin: 0,
-                    suggestedMax: 500
+                    suggestedMax: 5
                 }
             }
         }
@@ -480,14 +490,24 @@ function createHydrogenChart() {
 function updateHydrogenChart(newHydrogenLevel) {
     const now = new Date();
 
+    // Add the new data point
     hydrogenData.push({ x: now, y: newHydrogenLevel });
 
+    // Only shift if length exceeds 60
     if (hydrogenData.length > 60) {
-        hydrogenData.shift(); // Entferne alte Werte (halte nur die letzten 60 Sekunden)
+        hydrogenData.shift();  // Remove the oldest data point if the array exceeds 60 entries
     }
 
+    // If chart hasn't been initialized, create it
+    if (!hydrogenChartInstance) {
+        createHydrogenChart();
+    }
+
+    // Update the chart data
     hydrogenChartInstance.data.labels = hydrogenData.map(entry => entry.x);
-    hydrogenChartInstance.data.datasets[0].data = hydrogenData;
+    hydrogenChartInstance.data.datasets[0].data = hydrogenData.map(entry => entry.y); // Ensure correct y values
+
+    // Re-render the chart
     hydrogenChartInstance.update();
 }
 

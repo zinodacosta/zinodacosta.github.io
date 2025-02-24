@@ -1,4 +1,3 @@
-let timeInHours = 1 / 3600; //1 Std in 1 Sekunde
 let electrolyzerInterval = null;
 let fuelCellInterval = null;
 let speedfactor = 1;
@@ -6,7 +5,7 @@ let speedfactor = 1;
 export class photovoltaik {
   constructor() {
     this.power = 250; //Watt
-    this.efficiency = 0.2;
+    this.efficiency = 20;
   }
 
   updatePVPower(amount){
@@ -55,7 +54,7 @@ export class battery {
   constructor() {
     this.capacity = 10000; //kWh maximaler Füllstand
     this.storage = 0; //kWh aktueller Füllstand
-    this.efficiency = 1;
+    this.efficiency = 100;
   }
 
   updateBatteryEfficiency(amount){
@@ -93,7 +92,8 @@ export class fuelcell {
   }
   produceElectricity() {
     if (hydro.storage > 0) {
-      let powerProduced = (hydro.storage * this.efficiency * this.power * timeInHours * speedfactor) / 1000; 
+      let powerProduced = (hydro.storage * 33.3 * (this.efficiency/100) * (this.power/1000)  * speedfactor) / 1000; 
+      //Wasserstoffspeicher * 33.3kwH/kg * Brennstoffzelle Wirkungsgrad * Brennstoffzelle Leistung
       charge.updateBatteryStorage(powerProduced);
       hydro.storage -= powerProduced; // Wasserstoff wird verbraucht
 
@@ -105,7 +105,7 @@ export class fuelcell {
 }
 export class electrolyzer {
   constructor() {
-    this.efficiency = 0.7; //%/100
+    this.efficiency = 70; //%
     this.power = 200; //W
     this.storage = 0;
     this.capacity = 50000;
@@ -121,7 +121,8 @@ export class electrolyzer {
 
   produceHydrogen() {
     if (charge.storage > 0.1) {
-      let hydrogenProduced = ((charge.storage * this.efficiency * this.power * timeInHours * speedfactor) / 1000);
+      let hydrogenProduced = (((charge.storage * 55.5) * (this.efficiency/100) * (this.power/1000) * speedfactor) / 1000);
+      //Battery Speicher * 55.5kWh * Elektrolyzeur Wirkungsgrad * Elektrolyzeur Leistung
       if (this.storage + hydrogenProduced <= this.capacity) {
         this.storage += hydrogenProduced;
         let batteryConsumption = hydrogenProduced / this.efficiency;
@@ -151,7 +152,7 @@ async function fetchHydrogenLevel() {
     if (data.level !== undefined && data.level !== null) {
       // Stelle sicher, dass der Wasserstoffstand richtig angezeigt wird
       hydro.storage = data.level;  // Den Wert im electrolyzer-Objekt setzen
-      document.getElementById("hydrogen-level").innerText = `Hydrogen: ${hydro.storage.toFixed(2)} g`;
+      document.getElementById("hydrogen-level").innerText = ` ${hydro.storage.toFixed(2)} g`;
     } else {
       document.getElementById("hydrogen-level").innerText = "No hydrogen data available";
     }
@@ -192,7 +193,7 @@ async function fetchBatteryLevel() {
       charge.storage = data.level; // Batterie-Speicher synchronisieren
       document.getElementById(
         "battery-level"
-      ).innerText = `Battery: ${data.level.toFixed(2)} kWh`;
+      ).innerText = ` ${data.level.toFixed(2)} kWh`;
     }
   } catch (error) {
     console.error("error:", error);
@@ -268,7 +269,7 @@ let trade = new tradeElectricity();
 async function updateSimulation() {
   let sun = await pv.checkforSun();
   if (sun) {
-    let powergenerated = pv.efficiency * pv.power * timeInHours * charge.efficiency * speedfactor;
+    let powergenerated = (pv.efficiency/100) * pv.power * (charge.efficiency/100) * speedfactor;
     charge.updateBatteryStorage(powergenerated);
   }
 
@@ -376,7 +377,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   batteryEfficiencySlider.addEventListener("input", function(){
     const efficiency = parseFloat(batteryEfficiencySlider.value);
-    batteryEfficiencyValueDisplay.textContent = efficiency.toFixed(2);
+    batteryEfficiencyValueDisplay.textContent = efficiency + "%";
     charge.updateBatteryEfficiency(efficiency);
   });
 
@@ -388,7 +389,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   electrolyzerEfficiencySlider.addEventListener("input", function(){
     const efficiency = parseFloat(electrolyzerEfficiencySlider.value);
-    electrolyzerEfficiencyValueDisplay.textContent = efficiency.toFixed(2);
+    electrolyzerEfficiencyValueDisplay.textContent = efficiency + "%";
     hydro.updateElectrolyzerEfficiency(efficiency);
   });
 
@@ -406,13 +407,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   fuelcellEfficiencySlider.addEventListener("input", function(){
     const efficiency = parseFloat(fuelcellEfficiencySlider.value);
-    fuelcellEfficiencyValueDisplay.textContent = efficiency.toFixed(2);
+    fuelcellEfficiencyValueDisplay.textContent = efficiency + "%";
     fc.updateFuelCellEfficiency(efficiency);
   });
 
   PVEfficiencySlider.addEventListener("input", function(){
     const efficiency = parseFloat(PVEfficiencySlider.value);
-    PVEfficiencyValueDisplay.textContent = efficiency.toFixed(2);
+    PVEfficiencyValueDisplay.textContent = efficiency + "%";
     pv.updatePVEfficiency(efficiency);
   });
 
@@ -478,4 +479,3 @@ fetchBatteryLevel();
 
 // Regelmäßige Updates laufen nur über updateSimulation()
 setInterval(updateSimulation, 1000);
-
