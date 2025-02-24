@@ -58,16 +58,84 @@
 
       <!-- Hydrogen Eco System Section -->
       <h2>Hydrogen Eco Simulation</h2>
-      <p>Battery Level: <span id="battery-level">0</span></p>
-      <p>Hydrogen Level <span id="hydrogen-level">0</span></p>
-      <p>PV Status: <span id="sun"></span></p>
-      <p>Location: <span id="location"></span></p>
+      <div class="eco-system-container">
+        <div class="eco-item" id="battery">
+          <h3>Battery</h3>
+          <p>Battery Level: <span id="battery-level">0</span></p>
+          <label for="battery-efficiency">Battery Efficiency:</label>
+          <input type="range" id="battery-efficiency" step="0.01" min="0.01" max="1">
+          <span id="battery-efficiency-value">1.00</span>
+          <label for="battery-capacity">Battery Capacity:</label>
+          <input type="range" id="battery-capacity" step="1" min="1" max="10000">
+          <span id="battery-capacity-value">10 kWh</span>
+        </div>
+      
+        <div class="eco-item" id="electrolyzer">
+          <h3>Electrolyzer</h3>
+          <p>Hydrogen Level: <span id="hydrogen-level">0</span></p>
+          <label for="electrolyzer-efficiency">Electrolyzer Efficiency:</label>
+          <input type="range" id="electrolyzer-efficiency" step="0.01" min="0.01" max="1">
+          <span id="electrolyzer-efficiency-value">1</span>
+          <label for="electrolyzer-power">Electrolyzer Power:</label>
+          <input type="range" id="electrolyzer-power" step="1" min="100" max="10000">
+          <span id="electrolyzer-power-value">200</span>
+        </div>
+      
+        <div class="eco-item" id="fuelcell">
+          <h3>Fuel Cell</h3>
+          <p></p>
+          <label for="fuelcell-efficiency">Fuelcell Efficiency:</label>
+          <input type="range" id="fuelcell-efficiency" step="0.01" min="0.01" max="1">
+          <span id="fuelcell-efficiency-value">1</span>
+          <label for="fuelcell-power">Fuelcell Power:</label>
+          <input type="range" id="fuelcell-power" step="1" min="100" max="10000">
+          <span id="fuelcell-power-value">200</span>
+        </div>
+        <div class="eco-item" id="photovoltaik">
+          <h3>Photovoltaik</h3>
+          <label for="PV-efficiency">PV Efficiency:</label>
+          <input type="range" id="PV-efficiency" step="0.01" min="0.01" max="1">
+          <span id="PV-efficiency-value">1</span>
+    
+    
+          <label for="PV-power">Photovoltaik Power:</label>
+          <input type="range" id="PV-power" step="1" min="100" max="10000">
+          <span id="PV-power-value">200</span>
+    
+          <p>Location: <span id="location"></span></p>
+          <p>PV Status: <span id="sun"></span></p>
+
+        </div>
+        
+      </div>
+
+
+      
+
+
+      
+
+
+
       <p>Current Electricity Price: <span id="current-price"></span></p>
-      <button id="sell-button">Sell 0.1kWh</button>
-      <button id="buy-button">Buy 0.1kWh</button>
-      <button id="convert-to-hydrogen">Electricity -> Hydrogen</button>
-      <button id="convert-to-electricity">Hydrogen -> Electricity</button>
+
+      <button id="sell-button" class="button sell">Sell 0.1kWh</button>
+      <button id="buy-button" class="button buy">Buy 0.1kWh</button>
+      <button id="convert-to-hydrogen" class="button regular">Start Electrolyzer</button>
+      <button id="convert-to-hydrogen-stop" class="button regular" >Stop Electrolyzer</button>
+
+      <button id="convert-to-electricity" class="button regular" >Start Fuelcell</button>
+      <button id="convert-to-electricity-stop" class="button regular">Stop Fuelcell</button>
+
+      
+
       <p>Money in Account: <span id="money"></span></p>
+
+      <label for="speed-factor">Speed Factor:</label>
+      <input type="range" id="speed-factor" step="1" min="1" max="10">
+      <span id="speed-factor-value">1x</span>
+      <button id="reset" class="button regular">Reset Simulation</button>
+
       <h2>Battery Chart</h2>
       <canvas id="batteryChart" width="400" height="70"></canvas>
       <h2>Hydrogen Chart</h2>

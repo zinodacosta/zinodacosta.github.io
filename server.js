@@ -60,7 +60,7 @@ function initCounter() {
     //Increment the counter and reset it after reaching 7
     counterData.counter = counterData.counter + 1;
 
-    if (counterData.counter > 6) {
+    if (counterData.counter > 5) {
       counterData.counter = 0;
       console.log("Counter reset");
     }

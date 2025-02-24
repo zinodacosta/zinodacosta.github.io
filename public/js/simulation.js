@@ -1,9 +1,20 @@
 let timeInHours = 1 / 3600; //1 Std in 1 Sekunde
+let electrolyzerInterval = null;
+let fuelCellInterval = null;
+let speedfactor = 1;
 
 export class photovoltaik {
   constructor() {
     this.power = 250; //Watt
     this.efficiency = 0.2;
+  }
+
+  updatePVPower(amount){
+    this.power = amount;
+  }
+
+  updatePVEfficiency(amount){
+    this.efficiency = amount;
   }
 
   async checkforSun() {
@@ -21,7 +32,7 @@ export class photovoltaik {
       if (daytime == true) {
         if (cloudiness < 20) {
           document.getElementById("sun").textContent =
-            "Sun is shining. PV charging";
+            "Sun is shining. Charge Mode";
           sun = true;
         } else {
           document.getElementById("sun").textContent =
@@ -42,8 +53,17 @@ export class photovoltaik {
 
 export class battery {
   constructor() {
-    this.capacity = 5; //kWh maximaler Füllstand
+    this.capacity = 10000; //kWh maximaler Füllstand
     this.storage = 0; //kWh aktueller Füllstand
+    this.efficiency = 1;
+  }
+
+  updateBatteryEfficiency(amount){
+    this.efficiency = amount;
+  }
+
+  updateBatteryCapacity(amount){
+    this.capacity = amount;
   }
 
   updateBatteryStorage(amount) {
@@ -63,37 +83,51 @@ export class fuelcell {
     this.efficiency = 0.9; //%
     this.power = 500; //W
   }
+
+  updateFuelCellEfficiency(amount){
+    this.efficiency = amount;
+  }
+
+  updateFuelCellPower(amount){
+    this.power = amount;
+  }
   produceElectricity() {
     if (hydro.storage > 0) {
-      let powerProduced = (hydro.storage * 20 * this.efficiency) / 1000; //20kWh pro kg
+      let powerProduced = (hydro.storage * this.efficiency * this.power * timeInHours * speedfactor) / 1000; 
       charge.updateBatteryStorage(powerProduced);
-      hydro.storage = 0; // Wasserstoff wird verbraucht
+      hydro.storage -= powerProduced; // Wasserstoff wird verbraucht
 
       document.getElementById("battery-level").innerHTML =
-        charge.storage.toFixed(2) + " kWh";
-      document.getElementById("hydrogen-level").innerHTML =
-        hydro.storage.toFixed(2) + " kWh";
+        charge.storage.toFixed(2) + "kWh";
+        document.getElementById("hydrogen-level").innerHTML = hydro.storage.toFixed(2) + " g";
     }
   }
 }
 export class electrolyzer {
   constructor() {
-    this.efficiency = 0.7; //%
+    this.efficiency = 0.7; //%/100
     this.power = 200; //W
     this.storage = 0;
-    this.capacity = 500;
+    this.capacity = 50000;
+  }
+
+  updateElectrolyzerEfficiency(amount){
+    this.efficiency = amount;
+  }
+
+  updateElectrolyzerPower(amount){
+    this.power = amount
   }
 
   produceHydrogen() {
     if (charge.storage > 0.1) {
-      // Batterie muss genug Ladung haben
-      let hydrogenProduced = + ((charge.storage * this.efficiency) / 55.5) * 1000; // 55.5 kWh/kg H2
+      let hydrogenProduced = ((charge.storage * this.efficiency * this.power * timeInHours * speedfactor) / 1000);
       if (this.storage + hydrogenProduced <= this.capacity) {
         this.storage += hydrogenProduced;
-        charge.updateBatteryStorage(-charge.storage * this.efficiency); // Entladen der Batterie
+        let batteryConsumption = hydrogenProduced / this.efficiency;
+        charge.updateBatteryStorage(-batteryConsumption); // Adjust battery consumption based on efficiency
         document.getElementById("hydrogen-level").innerHTML =
           this.storage.toFixed(2) + " g";
-          
       } else {
         document.getElementById("hydrogen-level").innerHTML =
           "Hydrogen Storage is full";
@@ -234,7 +268,7 @@ let trade = new tradeElectricity();
 async function updateSimulation() {
   let sun = await pv.checkforSun();
   if (sun) {
-    let powergenerated = pv.efficiency * pv.power * timeInHours;
+    let powergenerated = pv.efficiency * pv.power * timeInHours * charge.efficiency * speedfactor;
     charge.updateBatteryStorage(powergenerated);
   }
 
@@ -276,26 +310,167 @@ async function updateSimulation() {
     }
 }
 
+
+function resetSimulation(){
+  console.log("Reset");
+  charge.storage = 0;
+  hydro.storage = 0;
+  trade.money = 0;
+
+  if (electrolyzerInterval !== null) {
+    clearInterval(electrolyzerInterval);
+    electrolyzerInterval = null;
+  }
+
+  if (fuelCellInterval !== null) {
+    clearInterval(fuelCellInterval);
+    fuelCellInterval = null;
+  }
+
+document.getElementById("battery-level").innerText = " 0 kWh";
+document.getElementById("hydrogen-level").innerText = " 0 g";
+document.getElementById("money").innerText = " : 0 €";
+}
+
+
 document.addEventListener("DOMContentLoaded", function () {
   fetchHydrogenLevel();
   const sellButton = document.getElementById("sell-button");
   const buyButton = document.getElementById("buy-button");
-  const hydrogenButton = document.getElementById("convert-to-hydrogen");
-  const electricityButton = document.getElementById("convert-to-electricity");
+  const resetButton = document.getElementById("reset");
+
+  const batteryEfficiencySlider = document.getElementById("battery-efficiency");
+  const batteryEfficiencyValueDisplay = document.getElementById("battery-efficiency-value");
+
+  const batteryCapacitySlider = document.getElementById("battery-capacity");
+  const batteryCapacityValueDisplay = document.getElementById("battery-capacity-value");
+
+  const electrolyzerEfficiencySlider = document.getElementById("electrolyzer-efficiency");
+  const electrolyzerEfficiencyValueDisplay = document.getElementById("electrolyzer-efficiency-value");
+
+  const electrolyzerPowerSlider = document.getElementById("electrolyzer-power");
+  const electrolyzerPowerValueDisplay = document.getElementById("electrolyzer-power-value");
+
+  const fuelcellPowerSlider = document.getElementById("fuelcell-power");
+  const fuelcellPowerValueDisplay = document.getElementById("fuelcell-power-value");
+
+  const fuelcellEfficiencySlider = document.getElementById("fuelcell-efficiency");
+  const fuelcellEfficiencyValueDisplay = document.getElementById("fuelcell-efficiency-value");
+
+  const PVEfficiencySlider = document.getElementById("PV-efficiency");
+  const PVEfficiencyValueDisplay = document.getElementById("PV-efficiency-value");
+
+  const PVPowerSlider = document.getElementById("PV-power");
+  const PVPowerValueDisplay = document.getElementById("PV-power-value");
+  
+  const speedfactorSlider = document.getElementById("speed-factor");
+  const speedfactorDisplay = document.getElementById("speed-factor-value");
+  
+
+  speedfactorSlider.addEventListener("input", function(){
+    const input = parseFloat(speedfactorSlider.value);
+    speedfactorDisplay.textContent = input + "x";
+    speedfactor = input;
+    console.log(input);
+  });
+
+  batteryEfficiencySlider.addEventListener("input", function(){
+    const efficiency = parseFloat(batteryEfficiencySlider.value);
+    batteryEfficiencyValueDisplay.textContent = efficiency.toFixed(2);
+    charge.updateBatteryEfficiency(efficiency);
+  });
+
+  batteryCapacitySlider.addEventListener("input", function(){
+    const capacity = parseFloat(batteryCapacitySlider.value);
+    batteryCapacityValueDisplay.textContent = capacity + "kWh";
+    charge.updateBatteryCapacity(capacity);
+  });
+
+  electrolyzerEfficiencySlider.addEventListener("input", function(){
+    const efficiency = parseFloat(electrolyzerEfficiencySlider.value);
+    electrolyzerEfficiencyValueDisplay.textContent = efficiency.toFixed(2);
+    hydro.updateElectrolyzerEfficiency(efficiency);
+  });
+
+  electrolyzerPowerSlider.addEventListener("input", function(){
+    const power = parseFloat(electrolyzerPowerSlider.value);
+    electrolyzerPowerValueDisplay.textContent = power + " Watt";
+    hydro.updateElectrolyzerPower(power);
+  });
+
+  fuelcellPowerSlider.addEventListener("input", function(){
+    const power = parseFloat(fuelcellPowerSlider.value);
+    fuelcellPowerValueDisplay.textContent = power + " Watt";
+    fc.updateFuelCellPower(power);
+  });
+
+  fuelcellEfficiencySlider.addEventListener("input", function(){
+    const efficiency = parseFloat(fuelcellEfficiencySlider.value);
+    fuelcellEfficiencyValueDisplay.textContent = efficiency.toFixed(2);
+    fc.updateFuelCellEfficiency(efficiency);
+  });
+
+  PVEfficiencySlider.addEventListener("input", function(){
+    const efficiency = parseFloat(PVEfficiencySlider.value);
+    PVEfficiencyValueDisplay.textContent = efficiency.toFixed(2);
+    pv.updatePVEfficiency(efficiency);
+  });
+
+  PVPowerSlider.addEventListener("input", function(){
+    const power = parseFloat(PVPowerSlider.value);
+    PVPowerValueDisplay.textContent = power + " Watt";
+    pv.updatePVPower(power);
+  });
 
   if (sellButton) {
     sellButton.addEventListener("click", trade.sellElectricity.bind(trade));
   }
+  if (resetButton) {
+    resetButton.addEventListener("click", resetSimulation);
+  }
+
   if (buyButton) {
     buyButton.addEventListener("click", trade.buyElectricity.bind(trade));
   }
-  if (hydrogenButton) {
-    hydrogenButton.addEventListener("click", hydro.produceHydrogen.bind(hydro));
-  }
-  if (electricityButton) {
-    electricityButton.addEventListener("click", fc.produceElectricity.bind(fc));
+});
+
+
+document.getElementById("convert-to-hydrogen").addEventListener("click", () => {
+  // Starte die Umwandlung im Elektrolyseur, wenn noch kein Intervall läuft
+  if (electrolyzerInterval === null) {
+    electrolyzerInterval = setInterval(() => {
+      hydro.produceHydrogen();  // Wasserstoffproduktion schrittweise
+    }, 1000);  // Alle Sekunde
+    console.log("Electrolyzer started");
   }
 });
+
+document.getElementById("convert-to-electricity").addEventListener("click", () => {
+  // Starte die Umwandlung im Elektrolyseur, wenn noch kein Intervall läuft
+  if (fuelCellInterval === null) {
+    fuelCellInterval = setInterval(() => {
+      fc.produceElectricity();  // Wasserstoffproduktion schrittweise
+    }, 1000);  // Alle Sekunde
+    console.log("Fuelcell started");
+  }
+});
+
+document.getElementById("convert-to-hydrogen-stop").addEventListener("click", () => {
+  if (electrolyzerInterval !== null) {
+    clearInterval(electrolyzerInterval); // Stoppe den Elektrolyseur
+    electrolyzerInterval = null;
+    console.log("Electrolyzer stopped");
+  }
+});
+
+document.getElementById("convert-to-electricity-stop").addEventListener("click", () => {
+  if (fuelCellInterval !== null) {
+    clearInterval(fuelCellInterval); // Stoppe die Brennstoffzelle
+    fuelCellInterval = null;
+    console.log("Fuel Cell stopped");
+  }
+});
+
 
 // Start-Synchronisation nur einmal beim Laden
 fetchBatteryLevel();
