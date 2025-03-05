@@ -94,8 +94,12 @@ function getNextDayTimestamp() {
 app.post("/saveBatteryStatus", async (req, res) => {
   const { batteryLevel } = req.body;
 
+  if (batteryLevel === null || batteryLevel === undefined || isNaN(batteryLevel)) {
+    return res.status(400).json({ error: "Invalid battery level" });
+  }
+
   try {
-    //Speichere den Batteriestand in der Datenbank
+    // Save the battery level to the database
     await saveBatteryStatus(batteryLevel);
     res.status(200).json({ message: "Battery status saved successfully" });
   } catch (error) {

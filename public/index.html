@@ -1,21 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Link to Google Fonts for Roboto -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
       rel="stylesheet"
     />
-    <!-- Link to your custom CSS -->
     <link rel="stylesheet" href="css/styles.css" />
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Protonik Hydrogen Dashboard</title>
 
-    <!-- Chart.js Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0"></script>
@@ -25,7 +22,6 @@
     <script type="module" src="/js/simulation.js"></script>
     <script type="module" src="/js/main.js"></script>
 
-    <!-- Only load simulation.js as a module in the head -->
   </head>
 
   <body>
@@ -37,7 +33,6 @@
       <h2 id="chart2-title">Actual Electricity Consumption</h2>
       <label for="graph-selector2">Select Graph Types</label>
 
-      <!--Creating Option Tool for second Graph-->
       <input type="checkbox" id="browncoal" value="browncoal" /> Brown Coal
       <input type="checkbox" id="biomass" value="biomass" /> Biomass
       <input type="checkbox" id="windoffshore" value="windoffshore" /> Wind
@@ -137,12 +132,38 @@
       <span id="speed-factor-value">1x</span>
       <button id="reset" class="button regular">Reset Simulation</button>
 
+      <div class="flowchart">
+        <div class="flow-item">
+            <img src="/icons/photovoltaik.png" alt="Photovoltaik">
+            <p>Photovoltaik</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="flow-item">
+            <img src="/icons/battery.png" alt="Battery">
+            <p>Battery</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="flow-item">
+            <img src="/icons/electrolyzer.png" alt="Electrolyzer">
+            <p>Electrolyzer</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="flow-item">
+            <img src="/icons/fuelcell.png" alt="Hydrogen Storage">
+            <p>Fuel Cell</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="flow-item">
+            <img src="/icons/battery.png" alt="Battery">
+            <p>Battery</p>
+        </div>
+    </div>
+
       <h2>Battery Storage</h2>
       <canvas id="batteryChart" width="400" height="70"></canvas>
       <h2>Hydrogen Storage</h2>
       <canvas id="hydrogenChart" width="400" height="70"></canvas>
     </div>
-    <!-- OpenAPI Documentation -->
     <div id="openapi"></div>
 
     <script>
@@ -164,7 +185,6 @@
       };
     </script>
 
-    <!-- Only load main.js if needed -->
     <script src="js/main.js"></script>
   </body>
 </html>

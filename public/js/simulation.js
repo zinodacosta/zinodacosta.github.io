@@ -92,7 +92,7 @@ export class fuelcell {
   }
   produceElectricity() {
     if (hydro.storage > 0) {
-      let powerProduced = (hydro.storage * 33.3 * (this.efficiency/100) * (this.power/1000)  * speedfactor) / 1000; 
+      let powerProduced = (hydro.storage * 33.3 * (this.efficiency/100) * (this.power/1000)  * speedfactor) / 10000; 
       //Wasserstoffspeicher * 33.3kwH/kg * Brennstoffzelle Wirkungsgrad * Brennstoffzelle Leistung
       charge.updateBatteryStorage(powerProduced);
       hydro.storage -= powerProduced; // Wasserstoff wird verbraucht
@@ -121,7 +121,7 @@ export class electrolyzer {
 
   produceHydrogen() {
     if (charge.storage > 0.1) {
-      let hydrogenProduced = (((charge.storage * 55.5) * (this.efficiency/100) * (this.power/1000) * speedfactor) / 1000);
+      let hydrogenProduced = (((charge.storage * 55.5) * (this.efficiency/100) * (this.power/1000) * speedfactor) / 10000);
       //Battery Speicher * 55.5kWh * Elektrolyzeur Wirkungsgrad * Elektrolyzeur Leistung
       if (this.storage + hydrogenProduced <= this.capacity) {
         this.storage += hydrogenProduced;
@@ -269,7 +269,7 @@ let trade = new tradeElectricity();
 async function updateSimulation() {
   let sun = await pv.checkforSun();
   if (sun) {
-    let powergenerated = (pv.efficiency/100) * pv.power * (charge.efficiency/100) * speedfactor;
+    let powergenerated = (pv.efficiency/100) * pv.power * (charge.efficiency/100) * speedfactor / 1000;
     charge.updateBatteryStorage(powergenerated);
   }
 
