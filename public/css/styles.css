@@ -4,6 +4,7 @@ body {
     font-size: 18px;
     background-color: #f8f9fa;
     margin: 0;
+    margin-left: 20px;
     padding: 0;
 }
 
@@ -114,26 +115,44 @@ footer {
     .checkbox-container label {
         margin: 5px 0;
     }
+
+    .button {
+        flex: 0 1 100%; /* Auf kleinen Screens jeweils 1 Button pro Reihe */
+        max-width: 100%;
+    }
 }
 
-/* Style for buttons */
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; 
+    justify-content: center;
+}
+
+
 .button {
-    background-color: #8cf1c2; /* Green background */
-    color: white; /* White text */
+    background-color: #000000;
+    color: white;
     padding: 10px 20px;
-    font-size: 16px; /* Make font size consistent */
+    font-size: 16px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    flex: 0 1 calc(50% - 10px);
+    max-width: calc(50% - 10px); 
+    text-align: center;
 }
-  
-/* Button hover effect */
+
+
 .button:hover {
     background-color: #777a78;
 }
 
-/* Specific button styles */
+.start:hover {
+    background-color: #f0f0f0;
+}
+
 .regular {
     background-color: rgb(221, 221, 221); /* Grey background */
     color: rgb(0, 0, 0);
@@ -149,28 +168,38 @@ footer {
     color: white;
 }
 
-/* Style for sliders */
+.start{
+    background-color: #cccccc;
+    color: rgb(0, 0, 0);
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
+
 input[type="range"] {
-    display: inline; /* Makes each slider appear on a new line */
-    width: 50%; /* Adjust width to the container */
-    margin-bottom: 2px; /* Adds space between sliders */
+    display: inline; 
+    width: 50%; 
+    margin-bottom: 2px; 
 }
 
-/* Label styles */
+
 label {
-    display: block; /* Ensures labels are also on new lines */
-    margin-bottom: 5px; /* Adds space between label and slider */
+    display: block; 
+    margin-bottom: 5px;
 }
-
 
 .eco-system-container {
     display: flex;
-    justify-content: space-between; /* Space out the columns */
-    gap: 20px; /* Optional, adds space between columns */
+    justify-content: space-between; 
+    gap: 20px; 
   }
   
   .eco-item {
-    flex: 1; /* This makes each item take up an equal width */
+    flex: 1; 
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -207,4 +236,19 @@ label {
     font-weight: bold;
     color: black;
     
+}
+
+#pv-static-arrow,
+#electrolyzer-static-arrow,
+#fuelcell-static-arrow {
+    width: 150px;  
+    height: auto;
+}
+
+ #pv-animated-arrow,
+ #electrolyzer-animated-arrow,
+ #fuelcell-animated-arrow {
+    width: 150px;  
+    height: auto;
+    transform: rotate(-90deg);
 }

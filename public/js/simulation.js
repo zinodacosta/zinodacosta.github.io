@@ -32,15 +32,21 @@ export class photovoltaik {
         if (cloudiness < 20) {
           document.getElementById("sun").textContent =
             "Sun is shining. Charge Mode";
+            document.getElementById("pv-static-arrow").style.display = "none";
+            document.getElementById("pv-animated-arrow").style.display = "block";
           sun = true;
         } else {
           document.getElementById("sun").textContent =
             "It is cloudy. PV not charging";
+            document.getElementById("pv-animated-arrow").style.display = "none";
+            document.getElementById("pv-static-arrow").style.display = "block";
           sun = false;
         }
       } else {
         document.getElementById("sun").textContent =
           "It is night-time. PV not charging";
+          document.getElementById("pv-animated-arrow").style.display = "none";
+          document.getElementById("pv-static-arrow").style.display = "block";
         sun = false;
       }
       return sun;
@@ -69,7 +75,7 @@ export class battery {
     if (amount > 0 && this.storage < this.capacity) {
       this.storage += amount;
     } else if (amount < 0 && this.storage > 0) {
-
+      
       this.storage += amount;
     }
     document.getElementById("battery-level").innerHTML =
@@ -97,9 +103,13 @@ export class fuelcell {
       charge.updateBatteryStorage(powerProduced);
       hydro.storage -= powerProduced; // Wasserstoff wird verbraucht
 
+
       document.getElementById("battery-level").innerHTML =
         charge.storage.toFixed(2) + "kWh";
         document.getElementById("hydrogen-level").innerHTML = hydro.storage.toFixed(2) + " g";
+    }
+    else{
+
     }
   }
 }
@@ -437,6 +447,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 document.getElementById("convert-to-hydrogen").addEventListener("click", () => {
+  document.getElementById("electrolyzer-static-arrow").style.display = "none";
+  document.getElementById("electrolyzer-animated-arrow").style.display = "block";
   // Starte die Umwandlung im Elektrolyseur, wenn noch kein Intervall läuft
   if (electrolyzerInterval === null) {
     electrolyzerInterval = setInterval(() => {
@@ -447,6 +459,8 @@ document.getElementById("convert-to-hydrogen").addEventListener("click", () => {
 });
 
 document.getElementById("convert-to-electricity").addEventListener("click", () => {
+  document.getElementById("fuelcell-static-arrow").style.display = "none";
+  document.getElementById("fuelcell-animated-arrow").style.display = "block";
   // Starte die Umwandlung im Elektrolyseur, wenn noch kein Intervall läuft
   if (fuelCellInterval === null) {
     fuelCellInterval = setInterval(() => {
@@ -457,6 +471,8 @@ document.getElementById("convert-to-electricity").addEventListener("click", () =
 });
 
 document.getElementById("convert-to-hydrogen-stop").addEventListener("click", () => {
+  document.getElementById("electrolyzer-static-arrow").style.display = "block";
+  document.getElementById("electrolyzer-animated-arrow").style.display = "none";
   if (electrolyzerInterval !== null) {
     clearInterval(electrolyzerInterval); // Stoppe den Elektrolyseur
     electrolyzerInterval = null;
@@ -465,6 +481,8 @@ document.getElementById("convert-to-hydrogen-stop").addEventListener("click", ()
 });
 
 document.getElementById("convert-to-electricity-stop").addEventListener("click", () => {
+  document.getElementById("fuelcell-static-arrow").style.display = "block";
+  document.getElementById("fuelcell-animated-arrow").style.display = "none";
   if (fuelCellInterval !== null) {
     clearInterval(fuelCellInterval); // Stoppe die Brennstoffzelle
     fuelCellInterval = null;
