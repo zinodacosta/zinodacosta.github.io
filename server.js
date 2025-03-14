@@ -99,7 +99,7 @@ app.post("/saveBatteryStatus", async (req, res) => {
   }
 
   try {
-    // Save the battery level to the database
+    //Save the battery level to the database
     await saveBatteryStatus(batteryLevel);
     res.status(200).json({ message: "Battery status saved successfully" });
   } catch (error) {
@@ -122,17 +122,17 @@ app.post("/saveHydrogenStatus", async (req, res) => {
 });
 
 function getCurrentHourTimestamp() {
-  const now = new Date(); // Aktuelle Zeit
+  const now = new Date(); //Aktuelle Zeit
 
-  // Setze Minuten, Sekunden und Millisekunden auf null
+  //Setze Minuten, Sekunden und Millisekunden auf null
   now.setMinutes(0, 0, 0);
 
-  // Wenn die aktuelle Minute nicht 0 ist, runde auf die nächste Stunde auf
+  //Wenn die aktuelle Minute nicht 0 ist, runde auf die nächste Stunde auf
   if (now.getMinutes() !== 0) {
     now.setHours(now.getHours() + 1);
   }
 
-  // Hole den Timestamp der nächsten vollen Stunde
+  //Hole den Timestamp der nächsten vollen Stunde
   const roundedTimestamp = now.getTime();
   console.log("Rounded Current Hour Timestamp:", roundedTimestamp);
   return roundedTimestamp;
@@ -142,31 +142,42 @@ function getCurrentHourTimestamp() {
 async function fetchAndSaveWholesalePrice() {
   const adjustedTimestamp = getNextDayTimestamp();
   const currentTimestamp = getCurrentHourTimestamp();
-  
+
   try {
-    //Abruf der Wholesale-Preisliste von API
-    const response = await fetch(`https://www.smard.de/app/chart_data/4169/DE/4169_DE_hour_${adjustedTimestamp}.json`); //Ersetze mit der echten URL
+    //Abruf der Wholesale-Preisliste von der API
+    const response = await fetch(`https://www.smard.de/app/chart_data/4169/DE/4169_DE_hour_${adjustedTimestamp}.json`);
     if (!response.ok) {
       throw new Error("Failed to fetch wholesale price from the external API");
     }
 
-    //Extrahiere preis aus API-Antwort
+    //Extrahiere den Preis aus der API-Antwort
     const data = await response.json();
 
-    //richtiges format prüfen
+    //Prüfen, ob die Antwort das richtige Format hat
     if (data && data.series && Array.isArray(data.series)) {
       //Wenn die Antwort eine series enthält und diese ein Array ist, verwenden wir die series
       const series = data.series;
 
-      //Filtern der Einträge, bei denen der value nicht null ist
-      const validEntries = series.filter(entry => entry[1] !== null && entry[0] === currentTimestamp); // Der Wert ist an index 1 und Timestamp an index 0
+      //Filtern der Einträge, bei denen der Wert nicht null ist
+      const validEntries = series.filter(entry => entry[1] !== null); //Entferne alle Einträge mit null als Wert
 
-      //jetziger eintrag
-      const lastEntry = validEntries[validEntries.length - 1];
+      //Überprüfen, ob wir überhaupt gültige Einträge haben
+      if (validEntries.length === 0) {
+        throw new Error("No valid price data found for the current timestamp.");
+      }
+
+      //Suche nach dem gültigen Eintrag für den aktuellen Timestamp oder den nächstgelegenen gültigen Eintrag
+      let lastEntry = validEntries.find(entry => entry[0] === currentTimestamp);
+
+      //Wenn kein Eintrag für den aktuellen Timestamp gefunden wurde, nehme den letzten gültigen Preis
+      if (!lastEntry) {
+        lastEntry = validEntries[validEntries.length - 1]; //Nimm den letzten gültigen Eintrag
+      }
+
       const price = lastEntry[1]; //Der Wert des letzten gültigen Eintrags
       const priceTimestamp = lastEntry[0]; //Der Timestamp des letzten gültigen Eintrags
 
-      //speichern in db
+      //Speichern des Preises in der DB
       await saveWholeSalePrice(priceTimestamp, price);
 
     } else {
@@ -181,9 +192,9 @@ async function fetchAndSaveWholesalePrice() {
 
 app.get("/get-wholesale-price", async (req, res) => {
   try {
-    // Hole den gespeicherten Wert aus der Datenbank oder der Datei
+    //Hole den gespeicherten Wert aus der Datenbank oder der Datei
     const priceData = await getLastWholeSalePrice();
-    res.json(priceData); // Schicke den Wert als JSON zurück
+    res.json(priceData); //Schicke den Wert als JSON zurück
   } catch (error) {
     console.error("Error fetching wholesale price:", error);
     res.status(500).json({ error: "Error fetching wholesale price" });
@@ -284,7 +295,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// Route zum Abrufen des letzten Batterielevels
+//Route zum Abrufen des letzten Batterielevels
 app.get("/getBatteryStatus", async (req, res) => {
   try {
     const lastBatteryStatus = await getLastBatteryStatus();
@@ -298,7 +309,7 @@ app.get("/getBatteryStatus", async (req, res) => {
   }
 });
 
-// Route zum Abrufen des letzten Hydrogenlevels
+//Route zum Abrufen des letzten Hydrogenlevels
 app.get("/getHydrogenStatus", async (req, res) => {
   try {
     const lastHydrogenStatus = await getLastHydrogenStatus();

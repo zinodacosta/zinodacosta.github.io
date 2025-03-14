@@ -2,58 +2,65 @@ let electrolyzerInterval = null;
 let fuelCellInterval = null;
 let speedfactor = 1;
 
+const apiKey = "e7c7b0c5b06544339dd03539253001";
+let city = "Frankfurt"; // Standardwert
+
+document.addEventListener("DOMContentLoaded", function () {
+    const citySelect = document.getElementById("city-select");
+    const locationDisplay = document.getElementById("location");
+
+    // Setze den Standardwert
+    locationDisplay.innerHTML = city;
+
+    citySelect.addEventListener("change", function () {
+        city = citySelect.value;
+        locationDisplay.innerHTML = city;
+        pv.checkforSun(); // Aktualisiere die PV-Überprüfung mit der neuen Stadt
+    });
+});
+
 export class photovoltaik {
-  constructor() {
-    this.power = 250; //Watt
-    this.efficiency = 20;
-  }
-
-  updatePVPower(amount){
-    this.power = amount;
-  }
-
-  updatePVEfficiency(amount){
-    this.efficiency = amount;
-  }
-
-  async checkforSun() {
-    const apiKey = "e7c7b0c5b06544339dd03539253001";
-    const city = "Frankfurt";
-    document.getElementById("location").innerHTML = city;
-    let sun = false;
-    try {
-      const response = await fetch(
-        `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`
-      );
-      const data = await response.json();
-      const cloudiness = data.current.cloud;
-      const daytime = data.current.is_day;
-      if (daytime == true) {
-        if (cloudiness < 20) {
-          document.getElementById("sun").textContent =
-            "Sun is shining. Charge Mode";
-            document.getElementById("pv-static-arrow").style.display = "none";
-            document.getElementById("pv-animated-arrow").style.display = "block";
-          sun = true;
-        } else {
-          document.getElementById("sun").textContent =
-            "It is cloudy. PV not charging";
-            document.getElementById("pv-animated-arrow").style.display = "none";
-            document.getElementById("pv-static-arrow").style.display = "block";
-          sun = false;
-        }
-      } else {
-        document.getElementById("sun").textContent =
-          "It is night-time. PV not charging";
-          document.getElementById("pv-animated-arrow").style.display = "none";
-          document.getElementById("pv-static-arrow").style.display = "block";
-        sun = false;
-      }
-      return sun;
-    } catch (error) {
-      console.error("Error", error);
+    constructor() {
+        this.power = 250; // Watt
+        this.efficiency = 20;
     }
-  }
+
+    async checkforSun() {
+        document.getElementById("location").innerHTML = city;
+        let sun = false;
+        try {
+            const response = await fetch(
+                `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`
+            );
+            const data = await response.json();
+            const cloudiness = data.current.cloud;
+            const daytime = data.current.is_day;
+            if (daytime) {
+                if (cloudiness < 20) {
+                    document.getElementById("sun").textContent =
+                        "Sun is shining. Charge Mode";
+                    document.getElementById("pv-static-arrow").style.display = "none";
+                    document.getElementById("pv-animated-arrow").style.display = "block";
+                    sun = true;
+                } else {
+                    document.getElementById("sun").textContent =
+                        "It is cloudy. PV not charging";
+                    document.getElementById("pv-animated-arrow").style.display = "none";
+                    document.getElementById("pv-static-arrow").style.display = "block";
+                    sun = false;
+                }
+            } else {
+                document.getElementById("sun").textContent =
+                    "It is night-time. PV not charging";
+                document.getElementById("pv-animated-arrow").style.display = "none";
+                document.getElementById("pv-static-arrow").style.display = "block";
+                sun = false;
+            }
+            return sun;
+        } catch (error) {
+            console.error("Error", error);
+        }
+    }
 }
 
 export class battery {
@@ -132,7 +139,7 @@ export class electrolyzer {
   produceHydrogen() {
     if (charge.storage > 0.1) {
       let hydrogenProduced = (((charge.storage * 55.5) * (this.efficiency/100) * (this.power/1000) * speedfactor) / 10000);
-      //Battery Speicher * 55.5kWh * Elektrolyzeur Wirkungsgrad * Elektrolyzeur Leistung
+      //Batterie Speicher * 55.5kWh * Elektrolyzeur Wirkungsgrad * Elektrolyzeur Leistung
       if (this.storage + hydrogenProduced <= this.capacity) {
         this.storage += hydrogenProduced;
         let batteryConsumption = hydrogenProduced / this.efficiency;
@@ -146,6 +153,22 @@ export class electrolyzer {
     } else {
       document.getElementById("hydrogen-level").innerHTML =
         this.storage.toFixed(2) + " g";
+    }
+  }
+}
+
+export class heater{
+  constructor(){
+    this.efficiency = 55;
+    this.power= 200;
+    this.temperature = 18;
+    this.ambientTemperature = 18;
+  }
+
+  produceHeat(){
+    if(hydro.storage > 0.1){
+      let heatProduced = (((this.power (1/this.efficiency - 1)) / 1005 * 50 ) * speedfactor) / 10000  // Q = Pel*(1/Wirkungsgrad - 1) / Wärmekapazität Luft * Volumen Luft
+      
     }
   }
 }
@@ -223,26 +246,29 @@ export class tradeElectricity {
   async priceCheck() {
     this.electricityPrice = await getLastWholeSalePrice();
     console.log("Preis in der Simulation geladen", this.electricityPrice);
-    document.getElementById("current-price").innerHTML =
-      this.electricityPrice + "€/MWh";
-
-    if (this.electricityPrice > 150) {
-      document.getElementById("buying-price").innerHTML =
-        "Current Price is over threshold -> sell electricity";
-      if (charge.storage != 0) {
-        charge.storage -= 1;
-        this.money += this.electricityPrice * 0.1;
+  
+    // Check if elements exist before trying to modify them
+    const currentPriceElement = document.getElementById("current-price");
+    if (currentPriceElement) {
+      currentPriceElement.innerHTML = this.electricityPrice + "€/MWh";
+    }
+  
+    const buyingPriceElement = document.getElementById("buying-price");
+    if (buyingPriceElement) {
+      if (this.electricityPrice > 150) {
+        buyingPriceElement.innerHTML = "Current Price is over threshold -> sell electricity";
+        if (charge.storage != 0) {
+          charge.storage -= 1;
+          this.money += this.electricityPrice * 0.1;
+          document.getElementById("money").innerHTML = " : " + this.money + " €";
+        }
+      } else if (this.electricityPrice < 80) {
+        buyingPriceElement.innerHTML = "Current Price is under threshold -> buy electricity";
+        charge.storage += 1;
+        this.money -= this.electricityPrice * 0.1;
         document.getElementById("money").innerHTML = " : " + this.money + " €";
       }
     }
-    if (this.electricityPrice < 80) {
-      document.getElementById("buying-price").innerHTML =
-        "Current Price is under threshold -> buy electricity";
-      charge.storage += 1;
-      this.money -= this.electricityPrice * 0.1;
-      document.getElementById("money").innerHTML = " : " + this.money + " €";
-    }
-    return this.electricityPrice;
   }
 
   async buyElectricity() {

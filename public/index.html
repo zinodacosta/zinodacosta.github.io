@@ -98,7 +98,14 @@
           <input type="range" id="PV-power" step="1" min="100" max="10000">
           <span id="PV-power-value">200</span>
     
-          <p>Location: <span id="location"></span></p>
+          <label for="city-select">Select Location:</label>
+          <select id="city-select">
+              <option value="Frankfurt">Frankfurt</option>
+              <option value="Sydney">Sydney</option>
+              <option value="New York">New York</option>
+              <option value="Madrid">Madrid</option>
+          </select>
+          <p>Current Location: <span id="location"></span></p>
           <p>PV Status: <span id="sun"></span></p>
 
         </div>
