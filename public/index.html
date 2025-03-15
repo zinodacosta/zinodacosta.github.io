@@ -24,9 +24,9 @@
     <script type="module" src="/js/main.js"></script>
   </head>
   <body>
-    <div id="code-minimized">
-      <div id="corner-widget">
-        <button id="toggle-widget">▲</button>
+    <div id="corner-widget">
+      <button id="toggle-widget">▲</button>
+      <div id="code-minimized">
         <div id="corner-content">
           <div class="gauge-container">
             <!-- Battery Level Gauge -->
@@ -60,14 +60,17 @@
               </div>
               <p class="gauge-text">Hydrogen</p>
             </div>
+
+
+
+
+
           </div>
+          <p id="simulation-state">Current Mode: </p>
         </div>
       </div>
-    </div>
 
-    <div id="code-expanded">
-      <div id="corner-widget">
-        <button id="toggle-widget">▼</button>
+      <div id="code-expanded" style="display: none;">
         <div id="corner-content">
           <h2>Wholesale Price</h2>
           <!-- Canvas for Chart -->
@@ -288,25 +291,7 @@
         </div>
       </div>
     </div>
-<!-- TODO animate icons better -->   
-<!--TODO fix window doesnt minimize after expanding correctly -->
-    <script>
-      window.onload = function () {
-        const ui = SwaggerUIBundle({
-          url: "openapi.yaml",
-          dom_id: "#openapi",
-          requestInterceptor: function (req) {
-            if (this.url !== "openapi.yaml") {
-              console.log(req);
-              var pathname = new URL(req.url).pathname;
-              console.log(pathname);
-              req.url = "https://smard.api.proxy.bund.dev" + pathname;
-              console.log(this.url);
-            }
-            return req;
-          },
-        });
-      };
-    </script>
+
+    <script type="module" src="/js/main.js"></script>
   </body>
 </html>
