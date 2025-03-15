@@ -252,3 +252,208 @@ label {
     height: auto;
     transform: rotate(-90deg);
 }
+
+#corner-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    z-index: 100;
+}
+
+/* Toggle button in the corner */
+#toggle-widget {
+    width: 30px;
+    height: 30px;
+    background-color: #333;
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Content area of the widget */
+#corner-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    display: block; /* Show icons by default */
+    height: auto;
+    transition: height 0.3s ease; /* Smooth transition */
+    max-height: px; /* Default max height */
+}
+
+/* Maximized state of the widget */
+#corner-widget.maximized #corner-content {
+    max-height: 100vh; /* Expand to full viewport height */
+    overflow-y: auto; /* Allow scrolling if content exceeds viewport height */
+}
+
+/* Widget items */
+.widget-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.widget-item img {
+    width: 24px;
+    height: 24px;
+}
+
+
+
+#battery-gauge-container {
+    position: relative;
+    width: 100px; 
+    height: 100px;
+    border-radius: 50%; 
+    background-color: #f0f0f0;
+    border: 2px solid #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#battery-gauge-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    border: 2px solid #000000;
+}
+
+#battery-gauge-level {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: #00ff00; /* Color to represent battery level */
+    border-radius: 50%; /* Keep the level shape circular */
+    z-index: 1; /* Ensure it's below the image */
+}
+
+#battery-gauge-image {
+    position: absolute;
+    padding-top: 20%;
+    padding-left: 24%;
+    width: 50%; /* Adjust the image size */
+    height: 50%; /* Adjust the image size */
+    object-fit: contain; /* Ensure the image maintains its aspect ratio */
+    z-index: 2; /* Ensure the image is on top of the battery level */
+}
+
+#battery-gauge-label {
+    padding-top: 65%;
+    position: absolute;
+    font-size: 18px;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    text-align: center;
+    z-index: 10; /* Ensure the label stays on top */
+}
+
+#battery-gauge-percentage {
+    display: inline-block;
+}
+
+
+
+
+#hydrogen-gauge-container {
+    position: relative;
+    width: 100px; 
+    height: 100px;
+    border-radius: 50%; 
+    background-color: #f0f0f0;
+    border: 2px solid #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#hydrogen-gauge-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    border: 5px solid #000000;
+}
+
+#hydrogen-gauge-level {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: #00ff40; /* Color to represent battery level */
+    border-radius: 50%; /* Keep the level shape circular */
+    z-index: 1; /* Ensure it's below the image */
+}
+
+#hydrogen-gauge-image {
+    position: absolute;
+    padding-top: 20%;
+    padding-left: 30%;
+    width: 50%; /* Adjust the image size */
+    height: 50%; /* Adjust the image size */
+    object-fit: contain; /* Ensure the image maintains its aspect ratio */
+    z-index: 2; /* Ensure the image is on top of the battery level */
+}
+
+#hydrogen-gauge-label {
+    padding-top: 70%;
+    position: absolute;
+    font-size: 18px;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    text-align: center;
+    z-index: 10; /* Ensure the label stays on top */
+}
+
+#hydrogen-gauge-percentage {
+    display: inline-block;
+}
+
+
+.gauge-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Abstand zwischen den Anzeigen */
+    margin-top: 20px;
+}
+
+.gauge-text {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 5px;
+    color: #333; /* Adjust color as needed */
+  }
+
+  #corner-content {
+    overflow-y: auto; /* Ermöglicht das Scrollen bei Überschreiten der Höhe */
+    transition: height 0.3s ease; /* Optional, für sanftes Umschalten der Höhe */
+    max-height: 800px; /* Maximalhöhe für den gesamten Container */
+  }
+  
+  #code-expanded {
+    max-height: 500px; /* Maximalhöhe für den erweiterten Code */
+    overflow-y: auto; /* Ermöglicht das Scrollen innerhalb des erweiterten Codes */
+  }
+  
+  #code-minimized {
+    display: block;
+    height: auto; /* Minimierte Ansicht automatisch anpassen */
+  }

@@ -223,6 +223,8 @@ app.post("/saveWholeSalePrice", async (req, res) => {
 });
 
 
+//TODO add EEX C02 API 
+
 //Endpoint: Provide API data
 app.get("/data", async (req, res) => {
   try {
