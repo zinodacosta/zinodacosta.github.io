@@ -9,7 +9,7 @@ if (!token) {
 const org = "your-org";
 const client = new InfluxDB({ url: "https://eu-central-1-1.aws.cloud2.influxdata.com", token });
 
-// Batteriestatus speichern
+//Batteriestatus speichern
 export async function saveBatteryStatus(batteryLevel) {
   const point = new Point("battery").floatField("level", batteryLevel);
 
@@ -23,7 +23,7 @@ export async function saveBatteryStatus(batteryLevel) {
   }
 }
 
-// Hydrogenspeicher speichern
+//Hydrogenspeicher speichern
 export async function saveHydrogenStatus(hydrogenLevel) {
   const point = new Point("Hydrogen Storage").floatField("level", hydrogenLevel);
 
@@ -31,7 +31,7 @@ export async function saveHydrogenStatus(hydrogenLevel) {
     const writeApiHydrogen = client.getWriteApi(org, "Simulation");
     writeApiHydrogen.writePoint(point);
     await writeApiHydrogen.flush();
-   // console.log("Hydrogen status saved:", hydrogenLevel.toFixed(2), "g");
+   //console.log("Hydrogen status saved:", hydrogenLevel.toFixed(2), "g");
   } catch (error) {
     console.error("Error saving hydrogen status:", error);
   }
@@ -108,7 +108,7 @@ export async function getLastHydrogenStatus() {
 }
 
 
-// Wholesale-Preis speichern
+//Wholesale-Preis speichern
 export async function saveWholeSalePrice(timestamp, value) {
   const point = new Point("price")
     .floatField("value", value)
@@ -124,7 +124,7 @@ export async function saveWholeSalePrice(timestamp, value) {
   }
 }
 
-// Letzten Wholesale-Preis abrufen
+//Letzten Wholesale-Preis abrufen
 export async function getLastWholeSalePrice() {
   try {
     const queryApi = client.getQueryApi(org);

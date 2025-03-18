@@ -3,25 +3,25 @@ let fuelCellInterval = null;
 let speedfactor = 1;
 
 const apiKey = "e7c7b0c5b06544339dd03539253001";
-let city = "Frankfurt"; // Standardwert
+let city = "Frankfurt"; //Standardwert
 
 document.addEventListener("DOMContentLoaded", function () {
   const citySelect = document.getElementById("city-select");
   const locationDisplay = document.getElementById("location");
-  if (!citySelect || !locationDisplay) return; // Verhindert Fehler, wenn Elemente fehlen
+  if (!citySelect || !locationDisplay) return; //Verhindert Fehler, wenn Elemente fehlen
 
   locationDisplay.innerHTML = city;
 
   citySelect.addEventListener("change", function () {
     city = citySelect.value;
     locationDisplay.innerHTML = city;
-    pv.checkforSun(); // Aktualisiere die PV-Überprüfung mit der neuen Stadt
+    pv.checkforSun(); //Aktualisiere die PV-Überprüfung mit der neuen Stadt
   });
 });
 
 export class photovoltaik {
     constructor() {
-        this.power = 250; // Watt
+        this.power = 250; //Watt
         this.efficiency = 20;
     }
     updatePVEfficiency(amount){
@@ -93,7 +93,7 @@ export class battery {
       this.storage += amount;
     }
 
-    // Update the battery level and gauge
+    //Update the battery level and gauge
     document.getElementById("battery-level").innerHTML = this.storage.toFixed(2) + " kWh";
     let batteryPercentage = (this.storage / this.capacity) * 100;
     document.getElementById("battery-gauge-percentage").innerHTML = batteryPercentage.toFixed(1) + " %";
@@ -121,7 +121,7 @@ export class fuelcell {
       let powerProduced = (hydro.storage * 33.3 * (this.efficiency / 100) * (this.power / 1000)  * speedfactor) / 100;
       //Wasserstoffspeicher * 33.3kwH/kg * Brennstoffzelle Wirkungsgrad * Brennstoffzelle Leistung
       charge.updateBatteryStorage(powerProduced);
-      hydro.storage -= powerProduced; // Wasserstoff wird verbraucht
+      hydro.storage -= powerProduced; //Wasserstoff wird verbraucht
 
 
       document.getElementById("battery-level").innerHTML =
@@ -166,7 +166,7 @@ export class electrolyzer {
       if (this.storage + hydrogenProduced <= this.capacity) {
         this.storage += hydrogenProduced;
         let batteryConsumption = hydrogenProduced * (1 / (this.efficiency / 100));
-        charge.updateBatteryStorage(-batteryConsumption); // Adjust battery consumption based on efficiency
+        charge.updateBatteryStorage(-batteryConsumption); //Adjust battery consumption based on efficiency
         document.getElementById("hydrogen-level").innerHTML =
           this.storage.toFixed(2) + " g";
           let hydrogenPercentage = (this.storage / this.capacity) * 100;
@@ -198,7 +198,7 @@ export class heater{
 
   produceHeat(){
     if(hydro.storage > 0.1){
-      let heatProduced = ((this.power * (1 / (this.efficiency / 100) - 1)) / 1005 * 50 ) * speedfactor / 10000;  // Q = Pel*(1/Wirkungsgrad - 1) / Wärmekapazität Luft * Volumen Luft
+      let heatProduced = ((this.power * (1 / (this.efficiency / 100) - 1)) / 1005 * 50 ) * speedfactor / 10000;  //Q = Pel*(1/Wirkungsgrad - 1) / Wärmekapazität Luft * Volumen Luft
       
     }
   }
@@ -215,8 +215,8 @@ async function fetchHydrogenLevel() {
     const data = await response.json();
 
     if (data.level !== undefined && data.level !== null) {
-      // Stelle sicher, dass der Wasserstoffstand richtig angezeigt wird
-      hydro.storage = data.level;  // Den Wert im electrolyzer-Objekt setzen
+      //Stelle sicher, dass der Wasserstoffstand richtig angezeigt wird
+      hydro.storage = data.level;  //Den Wert im electrolyzer-Objekt setzen
       document.getElementById("hydrogen-level").innerText = ` ${hydro.storage.toFixed(2)} g`;
     } else {
       document.getElementById("hydrogen-level").innerText = "No hydrogen data available";
@@ -255,7 +255,7 @@ async function fetchBatteryLevel() {
     const data = await response.json();
 
     if (data.level !== undefined) {
-      charge.storage = data.level; // Batterie-Speicher synchronisieren
+      charge.storage = data.level; //Batterie-Speicher synchronisieren
       document.getElementById(
         "battery-level"
       ).innerText = ` ${data.level.toFixed(2)} kWh`;
@@ -282,7 +282,7 @@ export class tradeElectricity {
     this.electricityPrice = await getLastWholeSalePrice();
     console.log("Preis in der Simulation geladen", this.electricityPrice);
   
-    // Check if elements exist before trying to modify them
+    //Check if elements exist before trying to modify them
     const currentPriceElement = document.getElementById("current-price");
     if (currentPriceElement) {
       currentPriceElement.innerHTML = this.electricityPrice + "€/MWh";
@@ -345,7 +345,7 @@ async function updateSimulation() {
     charge.updateBatteryStorage(powergenerated);
   }
 
-  // Sende den aktualisierten Batteriestand an den Server
+  //Sende den aktualisierten Batteriestand an den Server
   try {
     
     const response = await fetch("http://localhost:3000/saveBatteryStatus", {
@@ -364,7 +364,7 @@ async function updateSimulation() {
   } catch (error) {
     console.error("Error sending battery level to server:", error);
   }
-    // Sende den aktualisierten Hydrogenstand an den Server
+    //Sende den aktualisierten Hydrogenstand an den Server
     try {
       const response = await fetch("http://localhost:3000/saveHydrogenStatus", {
         method: "POST",
@@ -528,11 +528,11 @@ document.getElementById("convert-to-hydrogen").addEventListener("click", () => {
   document.getElementById("simulation-state").innerHTML = " Hydrogen Mode ";
   document.getElementById("electrolyzer-static-arrow").style.display = "none";
   document.getElementById("electrolyzer-animated-arrow").style.display = "block";
-  // Starte die Umwandlung im Elektrolyseur, wenn noch kein Intervall läuft
+  //Starte die Umwandlung im Elektrolyseur, wenn noch kein Intervall läuft
   if (electrolyzerInterval === null) {
     electrolyzerInterval = setInterval(() => {
-      hydro.produceHydrogen();  // Wasserstoffproduktion schrittweise
-    }, 1000);  // Alle Sekunde
+      hydro.produceHydrogen();  //Wasserstoffproduktion schrittweise
+    }, 1000);  //Alle Sekunde
     console.log("Electrolyzer started");
   }
 });
@@ -541,11 +541,11 @@ document.getElementById("convert-to-electricity").addEventListener("click", () =
   document.getElementById("simulation-state").innerHTML = " Fuel Cell Mode ";
   document.getElementById("fuelcell-static-arrow").style.display = "none";
   document.getElementById("fuelcell-animated-arrow").style.display = "block";
-  // Starte die Umwandlung im Elektrolyseur, wenn noch kein Intervall läuft
+  //Starte die Umwandlung im Elektrolyseur, wenn noch kein Intervall läuft
   if (fuelCellInterval === null) {
     fuelCellInterval = setInterval(() => {
-      fc.produceElectricity();  // Wasserstoffproduktion schrittweise
-    }, 1000);  // Alle Sekunde
+      fc.produceElectricity();  //Wasserstoffproduktion schrittweise
+    }, 1000);  //Alle Sekunde
     console.log("Fuelcell started");
   }
 });
@@ -555,7 +555,7 @@ document.getElementById("convert-to-hydrogen-stop").addEventListener("click", ()
   document.getElementById("electrolyzer-static-arrow").style.display = "block";
   document.getElementById("electrolyzer-animated-arrow").style.display = "none";
   if (electrolyzerInterval !== null) {
-    clearInterval(electrolyzerInterval); // Stoppe den Elektrolyseur
+    clearInterval(electrolyzerInterval); //Stoppe den Elektrolyseur
     electrolyzerInterval = null;
     console.log("Electrolyzer stopped");
   }
@@ -566,17 +566,17 @@ document.getElementById("convert-to-electricity-stop").addEventListener("click",
   document.getElementById("fuelcell-static-arrow").style.display = "block";
   document.getElementById("fuelcell-animated-arrow").style.display = "none";
   if (fuelCellInterval !== null) {
-    clearInterval(fuelCellInterval); // Stoppe die Brennstoffzelle
+    clearInterval(fuelCellInterval); //Stoppe die Brennstoffzelle
     fuelCellInterval = null;
     console.log("Fuel Cell stopped");
   }
 });
 
 
-// Start-Synchronisation nur einmal beim Laden
+//Start-Synchronisation nur einmal beim Laden
 fetchBatteryLevel();
 fetchHydrogenLevel();
 
 
-// Regelmäßige Updates laufen nur über updateSimulation()
+//Regelmäßige Updates laufen nur über updateSimulation()
 setInterval(updateSimulation, 1000);

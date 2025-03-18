@@ -580,22 +580,22 @@ document.addEventListener("DOMContentLoaded", function () {
   const content = document.getElementById("corner-content");
   const toggleButton = document.getElementById("toggle-widget");
 
-  // Standardwerte setzen: Minimierte Ansicht anzeigen
+  //Standardwerte setzen: Minimierte Ansicht anzeigen
   content.style.height = "300px";
   content.style.width = "300px";
   toggleButton.textContent = "▲";
 
-  // Initialzustand: Minimiert
+  //Initialzustand: Minimiert
   codeExpanded.style.display = "none";
   codeExpanded.style.backgroundColor =  "#f8f9fa";
   codeMinimized.style.display = "block";
   codeMinimized.style.backgroundColor =  "#f8f9fa";
 
-  // Beim Klicken auf den Button zwischen expandiert und minimiert wechseln
+  //Beim Klicken auf den Button zwischen expandiert und minimiert wechseln
   toggleButton.addEventListener("click", function () {
     if (codeExpanded.style.display === "none") {
 
-      // If it's currently minimized, expand it
+      //If it's currently minimized, expand it
       codeExpanded.style.display = "block";
       codeMinimized.style.display = "none";
       

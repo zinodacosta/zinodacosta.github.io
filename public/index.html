@@ -29,6 +29,8 @@
       <div id="code-minimized">
         <div id="corner-content">
           <div class="gauge-container">
+            <div class="wave-loader"></div>
+            <!--TODO check how to input battery icon into wave loader -->
             <!-- Battery Level Gauge -->
             <div id="battery-gauge-container">
               <div id="battery-gauge-background">
@@ -60,17 +62,12 @@
               </div>
               <p class="gauge-text">Hydrogen</p>
             </div>
-
-
-
-
-
           </div>
-          <p id="simulation-state">Current Mode: </p>
+          <p id="simulation-state">Current Mode:</p>
         </div>
       </div>
 
-      <div id="code-expanded" style="display: none;">
+      <div id="code-expanded" style="display: none">
         <div id="corner-content">
           <h2>Wholesale Price</h2>
           <!-- Canvas for Chart -->
@@ -78,24 +75,29 @@
 
           <div id="graph-selector2">
             <h2 id="chart2-title">Actual Electricity Consumption</h2>
-            <h3>Select Graph Types: </h3>
+            <h3>Select Graph Types:</h3>
 
-            <input type="checkbox" id="browncoal" value="browncoal" /> Brown Coal
-            <input type="checkbox" id="biomass" value="biomass" /> Biomass
-            <input type="checkbox" id="windoffshore" value="windoffshore" /> Wind
-            Offshore
+            <input type="checkbox" id="browncoal" value="browncoal" /> Brown
+            Coal <input type="checkbox" id="biomass" value="biomass" /> Biomass
+            <input type="checkbox" id="windoffshore" value="windoffshore" />
+            Wind Offshore
             <input type="checkbox" id="windonshore" value="windonshore" /> Wind
             Onshore
             <input type="checkbox" id="hydroelectric" value="hydroelectric" />
             Hydroelectric
-            <input type="checkbox" id="naturalgas" value="naturalgas" /> Natural Gas
-            <input type="checkbox" id="blackcoal" value="blackcoal" /> Black Coal
+            <input type="checkbox" id="naturalgas" value="naturalgas" /> Natural
+            Gas <input type="checkbox" id="blackcoal" value="blackcoal" /> Black
+            Coal
             <input type="checkbox" id="photovoltaik" value="photovoltaik" />
             Photovoltaik
-            <input type="checkbox" id="otherconventional" value="otherconventional" />
+            <input
+              type="checkbox"
+              id="otherconventional"
+              value="otherconventional"
+            />
             Other Conventional
-            <input type="checkbox" id="otherrenewable" value="otherrenewable" /> Other
-            Renewable
+            <input type="checkbox" id="otherrenewable" value="otherrenewable" />
+            Other Renewable
 
             <canvas id="myChart2" width="400" height="85"></canvas>
 
@@ -128,7 +130,9 @@
               <div class="eco-item" id="electrolyzer">
                 <h3>Electrolyzer</h3>
                 <p>Hydrogen Level: <span id="hydrogen-level">0</span></p>
-                <label for="electrolyzer-efficiency">Electrolyzer Efficiency:</label>
+                <label for="electrolyzer-efficiency"
+                  >Electrolyzer Efficiency:</label
+                >
                 <input
                   type="range"
                   id="electrolyzer-efficiency"
@@ -146,7 +150,9 @@
                   max="10000"
                 />
                 <span id="electrolyzer-power-value">200</span>
-                <label for="electrolyzer-capacity">Electrolyzer Capacity:</label>
+                <label for="electrolyzer-capacity"
+                  >Electrolyzer Capacity:</label
+                >
                 <input
                   type="range"
                   id="electrolyzer-capacity"
@@ -182,11 +188,23 @@
               <div class="eco-item" id="photovoltaik">
                 <h3>Photovoltaik</h3>
                 <label for="PV-efficiency">PV Efficiency:</label>
-                <input type="range" id="PV-efficiency" step="1" min="1" max="100" />
+                <input
+                  type="range"
+                  id="PV-efficiency"
+                  step="1"
+                  min="1"
+                  max="100"
+                />
                 <span id="PV-efficiency-value">20</span>
 
                 <label for="PV-power">Photovoltaik Power:</label>
-                <input type="range" id="PV-power" step="1" min="100" max="10000" />
+                <input
+                  type="range"
+                  id="PV-power"
+                  step="1"
+                  min="100"
+                  max="10000"
+                />
                 <span id="PV-power-value">200</span>
 
                 <label for="city-select">Select Location:</label>
@@ -205,12 +223,16 @@
 
             <button id="sell-button" class="button sell">Sell 1kWh</button>
             <button id="buy-button" class="button buy">Buy 1kWh</button>
-            <button id="convert-to-hydrogen" class="start">Start Electrolyzer</button>
+            <button id="convert-to-hydrogen" class="start">
+              Start Electrolyzer
+            </button>
             <button id="convert-to-hydrogen-stop" class="button">
               Stop Electrolyzer
             </button>
 
-            <button id="convert-to-electricity" class="start">Start Fuelcell</button>
+            <button id="convert-to-electricity" class="start">
+              Start Fuelcell
+            </button>
             <button id="convert-to-electricity-stop" class="button">
               Stop Fuelcell
             </button>
