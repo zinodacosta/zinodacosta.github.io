@@ -359,7 +359,7 @@ export class tradeElectricity {
         return;
       }
       console.log("Sold 1kWh");
-      this.money += this.electricityPrice;
+      this.money += this.electricityPrice / 100;
       charge.updateBatteryStorage(-1);
       document.getElementById("money").innerHTML =
         " : " + this.money.toFixed(2) + " €";

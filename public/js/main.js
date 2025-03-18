@@ -587,30 +587,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //Initialzustand: Minimiert
   codeExpanded.style.display = "none";
-  codeExpanded.style.backgroundColor =  "#f8f9fa";
+  codeExpanded.style.backgroundColor = "#f8f9fa";
   codeMinimized.style.display = "block";
-  codeMinimized.style.backgroundColor =  "#f8f9fa";
+  codeMinimized.style.backgroundColor = "#f8f9fa";
 
   //Beim Klicken auf den Button zwischen expandiert und minimiert wechseln
   toggleButton.addEventListener("click", function () {
     if (codeExpanded.style.display === "none") {
-
       //If it's currently minimized, expand it
       codeExpanded.style.display = "block";
       codeMinimized.style.display = "none";
-      
-  codeExpanded.style.backgroundColor =  "#f8f9fa";
-  codeMinimized.style.backgroundColor =  "#f8f9fa";
-      toggleButton.textContent = "▼"; 
-    } else {
 
+      codeExpanded.style.backgroundColor = "#f8f9fa";
+      codeMinimized.style.backgroundColor = "#f8f9fa";
+      toggleButton.textContent = "▼";
+    } else {
       //minimize
       codeExpanded.style.display = "none";
       codeMinimized.style.display = "block";
-      
-  codeExpanded.style.backgroundColor =  "#f8f9fa";
-  codeMinimized.style.backgroundColor =  "#f8f9fa";
-      toggleButton.textContent = "▲"; 
+
+      codeExpanded.style.backgroundColor = "#f8f9fa";
+      codeMinimized.style.backgroundColor = "#f8f9fa";
+      toggleButton.textContent = "▲";
     }
   });
 });
