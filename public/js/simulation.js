@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
     pv.checkforSun(); //Aktualisiere die PV-Überprüfung mit der neuen Stadt
   });
 });
-
+//TODO check whats wrong with pv sun checker
 export class photovoltaik {
   constructor() {
     this.power = 250; //Watt
@@ -38,8 +38,12 @@ export class photovoltaik {
         `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`
       );
       const data = await response.json();
-      const cloudiness = data.current.cloud_pct;
+      console.log(data);
+
+      const cloudiness = data.current.cloud;
       const daytime = data.current.is_day;
+      console.log("Cloudiness:", cloudiness); // Log cloudiness
+      console.log("Is Daytime:", daytime); // Log daytime status
       if (daytime) {
         if (cloudiness < 20) {
           document.getElementById("sun").textContent =
@@ -309,7 +313,8 @@ export class tradeElectricity {
     if (currentPriceElement) {
       currentPriceElement.innerHTML = this.electricityPrice + "€/MWh";
     }
-    document.getElementById('electricity-price').innerHTML = this.electricityPrice;
+    document.getElementById("electricity-price").innerHTML =
+      this.electricityPrice;
     const buyingPriceElement = document.getElementById("buying-price");
     if (buyingPriceElement) {
       if (this.electricityPrice > 150) {
@@ -411,8 +416,21 @@ async function updateSimulation() {
   } catch (error) {
     console.error("Error sending hydrogen level to server:", error);
   }
-}
 
+  if (trade.electricityPrice > 150) {
+    console.log("Electricity Price over Threshold: Selling Electricity");
+    await fc.produceElectricity();
+    await trade.sellElectricity();
+  }
+  if (trade.electricityPrice < 80) {
+    console.log("Electricity Price under Threshold: Buying Electricity");
+    await trade.buyElectricity();
+    if (trade.electricityPrice > 80 && trade.electricityPrice < 150) {
+      console.log("Electricity Price in acceptable range");
+      await hydro.produceHydrogen();
+    }
+  }
+}
 function resetSimulation() {
   console.log("Reset");
   charge.storage = 0;
