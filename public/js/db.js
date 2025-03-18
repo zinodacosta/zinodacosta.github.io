@@ -1,4 +1,6 @@
 import { InfluxDB, Point } from "@influxdata/influxdb-client";
+import dotenv from 'dotenv';
+dotenv.config({ path: 'token.env' });
 
 const token = process.env.INFLUXDB_TOKEN;
 if (!token) {
