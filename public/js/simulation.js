@@ -38,12 +38,8 @@ export class photovoltaik {
         `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`
       );
       const data = await response.json();
-      console.log(data);
-
       const cloudiness = data.current.cloud;
       const daytime = data.current.is_day;
-      console.log("Cloudiness:", cloudiness); // Log cloudiness
-      console.log("Is Daytime:", daytime); // Log daytime status
       if (daytime) {
         if (cloudiness < 20) {
           document.getElementById("sun").textContent =
@@ -111,6 +107,7 @@ export class fuelcell {
   constructor() {
     this.efficiency = 0.9; //%
     this.power = 500; //W
+    this.fuelcellflag = false;
   }
 
   updateFuelCellEfficiency(amount) {
@@ -152,6 +149,7 @@ export class electrolyzer {
     this.power = 200; //W
     this.storage = 0;
     this.capacity = 100; //g
+    this.hydrogenflag = false;
   }
 
   updateElectrolyzerEfficiency(amount) {
@@ -337,32 +335,40 @@ export class tradeElectricity {
   }
 
   async buyElectricity() {
-    if (charge.storage + 0.09 < charge.capacity) {
+    if (this.money > 0) {
+      if (charge.storage + 1 <= charge.capacity) {
+        if (this.electricityPrice === null || isNaN(this.electricityPrice)) {
+          await this.priceCheck();
+          if (this.electricityPrice === null || isNaN(this.electricityPrice))
+            return;
+        }
+        console.log("Bought 1kWh");
+        this.money -= this.electricityPrice * 0.1;
+        charge.updateBatteryStorage(1);
+        document.getElementById("money").innerHTML =
+          " : " + this.money.toFixed(2) + " €";
+      } else {
+        document.getElementById("battery-level").innerHTML =
+          "Can't buy, battery is full";
+      }
+    }
+  }
+
+  async sellElectricity() {
+    if (charge.storage >= 1) {
       if (this.electricityPrice === null || isNaN(this.electricityPrice)) {
         await this.priceCheck();
-        return;
+        if (this.electricityPrice === null || isNaN(this.electricityPrice))
+          return;
       }
-      console.log("Bought 1kWh");
-      this.money -= this.electricityPrice * 0.1;
-      charge.updateBatteryStorage(1);
+      console.log("Sold 1kWh");
+      this.money += this.electricityPrice * 0.1;
+      charge.updateBatteryStorage(-1);
       document.getElementById("money").innerHTML =
         " : " + this.money.toFixed(2) + " €";
     } else {
       document.getElementById("battery-level").innerHTML =
-        "Can't buy battery is full";
-    }
-  }
-  async sellElectricity() {
-    if (charge.storage > 0.1) {
-      if (this.electricityPrice === null || isNaN(this.electricityPrice)) {
-        await this.priceCheck();
-        return;
-      }
-      console.log("Sold 1kWh");
-      this.money += this.electricityPrice / 100;
-      charge.updateBatteryStorage(-1);
-      document.getElementById("money").innerHTML =
-        " : " + this.money.toFixed(2) + " €";
+        "Can't sell, not enough energy stored";
     }
   }
 }
@@ -370,15 +376,18 @@ let trade = new tradeElectricity();
 
 async function updateSimulation() {
   let sun = await pv.checkforSun();
-  if (sun) {
+  if (sun && charge.storage < charge.capacity) {
     let powergenerated =
       ((pv.efficiency / 100) *
         pv.power *
         (charge.efficiency / 100) *
         speedfactor) /
       1000;
+      if(powergenerated + charge.storage <= charge.capacity){
     charge.updateBatteryStorage(powergenerated);
   }
+}
+
 
   //Sende den aktualisierten Batteriestand an den Server
   try {
@@ -429,6 +438,9 @@ async function updateSimulation() {
       console.log("Electricity Price in acceptable range");
       await hydro.produceHydrogen();
     }
+  }
+  if (charge.storage / charge.capacity > 0.8 && trade.electricityPrice < 150) {
+    await hydro.produceHydrogen();
   }
 }
 function resetSimulation() {
