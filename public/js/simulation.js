@@ -18,7 +18,9 @@ document.addEventListener("DOMContentLoaded", function () {
     pv.checkforSun(); //Aktualisiere die PV-Überprüfung mit der neuen Stadt
   });
 });
-//TODO check whats wrong with pv sun checker
+
+
+  
 export class photovoltaik {
   constructor() {
     this.power = 250; //Watt
@@ -311,7 +313,7 @@ export class tradeElectricity {
     if (currentPriceElement) {
       currentPriceElement.innerHTML = this.electricityPrice + "€/MWh";
     }
-    document.getElementById("electricity-price").innerHTML =
+    document.getElementById("current-price").innerHTML =
       this.electricityPrice;
     const buyingPriceElement = document.getElementById("buying-price");
     if (buyingPriceElement) {
@@ -375,6 +377,7 @@ export class tradeElectricity {
 let trade = new tradeElectricity();
 
 async function updateSimulation() {
+  //Check for sun and charge battery if possible
   let sun = await pv.checkforSun();
   if (sun && charge.storage < charge.capacity) {
     let powergenerated =
@@ -383,13 +386,12 @@ async function updateSimulation() {
         (charge.efficiency / 100) *
         speedfactor) /
       1000;
-      if(powergenerated + charge.storage <= charge.capacity){
-    charge.updateBatteryStorage(powergenerated);
+    if (powergenerated + charge.storage <= charge.capacity) {
+      charge.updateBatteryStorage(powergenerated);
+    }
   }
-}
 
-
-  //Sende den aktualisierten Batteriestand an den Server
+  //Send battery level to server
   try {
     const response = await fetch("http://localhost:3000/saveBatteryStatus", {
       method: "POST",
@@ -400,14 +402,14 @@ async function updateSimulation() {
     });
 
     if (response.ok) {
-      console.log("Battery level saved to DB");
+     
     } else {
       console.error("Failed to save battery level");
     }
   } catch (error) {
     console.error("Error sending battery level to server:", error);
   }
-  //Sende den aktualisierten Hydrogenstand an den Server
+  //Send hydrogen level to server
   try {
     const response = await fetch("http://localhost:3000/saveHydrogenStatus", {
       method: "POST",
@@ -418,7 +420,7 @@ async function updateSimulation() {
     });
 
     if (response.ok) {
-      console.log("Hydrogen level saved to DB");
+      
     } else {
       console.error("Failed to save hydrogen level");
     }
@@ -426,6 +428,7 @@ async function updateSimulation() {
     console.error("Error sending hydrogen level to server:", error);
   }
 
+  //Automate trade logic
   if (trade.electricityPrice > 150) {
     console.log("Electricity Price over Threshold: Selling Electricity");
     await fc.produceElectricity();
@@ -442,7 +445,20 @@ async function updateSimulation() {
   if (charge.storage / charge.capacity > 0.8 && trade.electricityPrice < 150) {
     await hydro.produceHydrogen();
   }
+
+  const waveLoader1before = document.querySelector(".wave-loader1");
+  waveLoader1before.style.setProperty('--before-top', (charge.storage / charge.capacity) * 100 * -1 + "%");
+  const waveLoader1after = document.querySelector(".wave-loader1");
+  waveLoader1after.style.setProperty('--after-top', (charge.storage / charge.capacity) * 100 * -1 + "%");
+  const waveLoader2before = document.querySelector(".wave-loader2");
+  waveLoader2before.style.setProperty('--before-top', (hydro.storage / hydro.capacity) * 100 * -1 + "%");
+  const waveLoader2after = document.querySelector(".wave-loader2");
+  waveLoader2after.style.setProperty('--after-top', (hydro.storage / hydro.capacity) * 100 * -1 + "%");
+//TODO fix overflow of wave loader
+
+
 }
+
 function resetSimulation() {
   console.log("Reset");
   charge.storage = 0;
@@ -667,3 +683,4 @@ fetchHydrogenLevel();
 //Regelmäßige Updates laufen nur über updateSimulation()
 setInterval(updateSimulation, 1000);
 //TODO make animations for battery and hydrogen storage grow proportionally to the amount of energy stored
+//TODO sync current electricity price with website
