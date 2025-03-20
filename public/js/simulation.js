@@ -3,24 +3,22 @@ let fuelCellInterval = null;
 let speedfactor = 1;
 
 const apiKey = "e7c7b0c5b06544339dd03539253001";
-let city = "Frankfurt"; //Standardwert
+let city = "Frankfurt";
 
 document.addEventListener("DOMContentLoaded", function () {
   const citySelect = document.getElementById("city-select");
   const locationDisplay = document.getElementById("location");
-  if (!citySelect || !locationDisplay) return; //Verhindert Fehler, wenn Elemente fehlen
+  if (!citySelect || !locationDisplay) return;
 
   locationDisplay.innerHTML = city;
 
   citySelect.addEventListener("change", function () {
     city = citySelect.value;
     locationDisplay.innerHTML = city;
-    pv.checkforSun(); //Aktualisiere die PV-Überprüfung mit der neuen Stadt
+    pv.checkforSun();
   });
 });
 
-
-  
 export class photovoltaik {
   constructor() {
     this.power = 250; //Watt
@@ -74,8 +72,8 @@ export class photovoltaik {
 
 export class battery {
   constructor() {
-    this.capacity = 100; //kWh maximaler Füllstand
-    this.storage = 0; //kWh aktueller Füllstand
+    this.capacity = 100; //kWh max val
+    this.storage = 0; //kWh current val
     this.efficiency = 100;
   }
 
@@ -130,7 +128,7 @@ export class fuelcell {
         100;
       //Wasserstoffspeicher * 33.3kwH/kg * Brennstoffzelle Wirkungsgrad * Brennstoffzelle Leistung
       charge.updateBatteryStorage(powerProduced);
-      hydro.storage -= powerProduced; //Wasserstoff wird verbraucht
+      hydro.storage -= powerProduced;
 
       document.getElementById("battery-level").innerHTML =
         charge.storage.toFixed(2) + "kWh";
@@ -235,8 +233,7 @@ async function fetchHydrogenLevel() {
     const data = await response.json();
 
     if (data.level !== undefined && data.level !== null) {
-      //Stelle sicher, dass der Wasserstoffstand richtig angezeigt wird
-      hydro.storage = data.level; //Den Wert im electrolyzer-Objekt setzen
+      hydro.storage = data.level;
       document.getElementById(
         "hydrogen-level"
       ).innerText = ` ${hydro.storage.toFixed(2)} g`;
@@ -313,8 +310,7 @@ export class tradeElectricity {
     if (currentPriceElement) {
       currentPriceElement.innerHTML = this.electricityPrice + "€/MWh";
     }
-    document.getElementById("current-price").innerHTML =
-      this.electricityPrice;
+    document.getElementById("current-price").innerHTML = this.electricityPrice;
     const buyingPriceElement = document.getElementById("buying-price");
     if (buyingPriceElement) {
       if (this.electricityPrice > 150) {
@@ -402,7 +398,6 @@ async function updateSimulation() {
     });
 
     if (response.ok) {
-     
     } else {
       console.error("Failed to save battery level");
     }
@@ -420,7 +415,6 @@ async function updateSimulation() {
     });
 
     if (response.ok) {
-      
     } else {
       console.error("Failed to save hydrogen level");
     }
@@ -447,16 +441,26 @@ async function updateSimulation() {
   }
 
   const waveLoader1before = document.querySelector(".wave-loader1");
-  waveLoader1before.style.setProperty('--before-top', (charge.storage / charge.capacity) * 100 * -1 + "%");
+  waveLoader1before.style.setProperty(
+    "--before-top",
+    (charge.storage / charge.capacity) * 100 * -1 - 15 + "%"
+  );
   const waveLoader1after = document.querySelector(".wave-loader1");
-  waveLoader1after.style.setProperty('--after-top', (charge.storage / charge.capacity) * 100 * -1 + "%");
+  waveLoader1after.style.setProperty(
+    "--after-top",
+    (charge.storage / charge.capacity) * 100 * -1 - 15 + "%"
+  );
   const waveLoader2before = document.querySelector(".wave-loader2");
-  waveLoader2before.style.setProperty('--before-top', (hydro.storage / hydro.capacity) * 100 * -1 + "%");
+  waveLoader2before.style.setProperty(
+    "--before-top",
+    (hydro.storage / hydro.capacity) * 100 * -1 - 15 + "%"
+  );
   const waveLoader2after = document.querySelector(".wave-loader2");
-  waveLoader2after.style.setProperty('--after-top', (hydro.storage / hydro.capacity) * 100 * -1 + "%");
-//TODO fix overflow of wave loader
-
-
+  waveLoader2after.style.setProperty(
+    "--after-top",
+    (hydro.storage / hydro.capacity) * 100 * -1 - 15 + "%"
+  );
+  //TODO fix overflow of wave loader
 }
 
 function resetSimulation() {
@@ -682,5 +686,3 @@ fetchHydrogenLevel();
 
 //Regelmäßige Updates laufen nur über updateSimulation()
 setInterval(updateSimulation, 1000);
-//TODO make animations for battery and hydrogen storage grow proportionally to the amount of energy stored
-//TODO sync current electricity price with website

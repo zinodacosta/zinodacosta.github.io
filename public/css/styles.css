@@ -331,6 +331,7 @@ label {
     height: 30px;
     background-color: #000000;
     color: white;
+    margin: 3px;
     font-size: 18px;
     text-align: center;
     border: none;
@@ -341,10 +342,12 @@ label {
     align-items: center;
     cursor: pointer;
     position: absolute;
+
 }
 
 /* Content area of the widget */
 #corner-content {
+    
     display: flex;
     flex-direction: column;
     gap: 10px;

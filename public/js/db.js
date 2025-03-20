@@ -1,6 +1,6 @@
 import { InfluxDB, Point } from "@influxdata/influxdb-client";
-import dotenv from 'dotenv';
-dotenv.config({ path: 'token.env' });
+import dotenv from "dotenv";
+dotenv.config({ path: "token.env" });
 
 const token = process.env.INFLUXDB_TOKEN;
 if (!token) {
@@ -9,9 +9,12 @@ if (!token) {
 }
 
 const org = "your-org";
-const client = new InfluxDB({ url: "https://eu-central-1-1.aws.cloud2.influxdata.com", token });
+const client = new InfluxDB({
+  url: "https://eu-central-1-1.aws.cloud2.influxdata.com",
+  token,
+});
 
-//Batteriestatus speichern
+//save battery
 export async function saveBatteryStatus(batteryLevel) {
   const point = new Point("battery").floatField("level", batteryLevel);
 
@@ -25,15 +28,17 @@ export async function saveBatteryStatus(batteryLevel) {
   }
 }
 
-//Hydrogenspeicher speichern
+//save hydrogen
 export async function saveHydrogenStatus(hydrogenLevel) {
-  const point = new Point("Hydrogen Storage").floatField("level", hydrogenLevel);
+  const point = new Point("Hydrogen Storage").floatField(
+    "level",
+    hydrogenLevel
+  );
 
   try {
     const writeApiHydrogen = client.getWriteApi(org, "Simulation");
     writeApiHydrogen.writePoint(point);
     await writeApiHydrogen.flush();
-   //console.log("Hydrogen status saved:", hydrogenLevel.toFixed(2), "g");
   } catch (error) {
     console.error("Error saving hydrogen status:", error);
   }
@@ -65,7 +70,7 @@ export async function getLastBatteryStatus() {
         error(error) {
           console.error("Error fetching last battery status:", error);
           reject(error);
-        }
+        },
       });
     });
   } catch (error) {
@@ -100,7 +105,7 @@ export async function getLastHydrogenStatus() {
         error(error) {
           console.error("Error fetching last hydrogen status:", error);
           reject(error);
-        }
+        },
       });
     });
   } catch (error) {
@@ -109,8 +114,7 @@ export async function getLastHydrogenStatus() {
   }
 }
 
-
-//Wholesale-Preis speichern
+//save wholesale price
 export async function saveWholeSalePrice(timestamp, value) {
   const point = new Point("price")
     .floatField("value", value)
@@ -126,7 +130,7 @@ export async function saveWholeSalePrice(timestamp, value) {
   }
 }
 
-//Letzten Wholesale-Preis abrufen
+//get last price
 export async function getLastWholeSalePrice() {
   try {
     const queryApi = client.getQueryApi(org);
@@ -152,7 +156,7 @@ export async function getLastWholeSalePrice() {
         error(error) {
           console.error("Error fetching last wholesale price:", error);
           reject(error);
-        }
+        },
       });
     });
   } catch (error) {

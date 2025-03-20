@@ -1,10 +1,10 @@
 let graphType = "wholesalePrice"; //Default graph type for the first chart
 let graphTypesForSecondChart = ["actualelectricityconsumption"]; //Default second chart graph type
-let myChartInstance; //Store the first chart instance
-let myChartInstance2 = null; //Store the second chart instance
-let graphIdentifiers; //Will store the graphIdentifiers object
-let batteryData = []; //Speichert die Batterie-Werte
-let batteryChartInstance = null; //Speichert die Chart-Instanz
+let myChartInstance;
+let myChartInstance2 = null;
+let graphIdentifiers;
+let batteryData = [];
+let batteryChartInstance = null;
 let hydrogenData = [];
 let hydrogenChartInstance = null;
 
@@ -187,7 +187,7 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
               `${context.dataset.label}: ${context.raw.toFixed(2)} €/MWh`,
           },
         },
-        verticalLine1: {}, //Enable the custom plugin
+        verticalLine1: {},
       },
       interaction: {
         mode: "index",
@@ -226,7 +226,7 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
         },
       },
     },
-    plugins: [verticalLinePlugin1], //Register the custom plugin here
+    plugins: [verticalLinePlugin1],
   });
 }
 
@@ -300,7 +300,7 @@ function updateSecondChart(graphDataArray) {
   myChartInstance2 = new Chart(ctx, {
     type: "line",
     data: {
-      labels: graphDataArray[0].labels, //Assume shared labels across datasets
+      labels: graphDataArray[0].labels,
       datasets: graphDataArray.map((graphData) => ({
         label: graphData.label,
         data: graphData.values,
@@ -331,7 +331,7 @@ function updateSecondChart(graphDataArray) {
           mode: "index",
           intersect: false,
         },
-        verticalLine2: {}, //Ensure plugin is registered
+        verticalLine2: {},
       },
       interaction: {
         mode: "index",
@@ -370,7 +370,7 @@ function updateSecondChart(graphDataArray) {
         },
       },
     },
-    plugins: [verticalLinePlugin2], //Register plugin
+    plugins: [verticalLinePlugin2],
   });
 }
 
@@ -461,18 +461,17 @@ function updateBatteryChart(newBatteryLevel) {
   batteryChartInstance.data.labels = batteryData.map((entry) => entry.x);
   batteryChartInstance.data.datasets[0].data = batteryData.map(
     (entry) => entry.y
-  ); //Ensure correct y values
+  );
 
   //Re-render the chart
   batteryChartInstance.update();
 }
 
-//Funktion zum Erstellen des Graphen
+//create hydrogen chart
 function createHydrogenChart() {
   const ctx = document.getElementById("hydrogenChart").getContext("2d");
 
   hydrogenChartInstance = new Chart(ctx, {
-    //Hier Korrektur von batteryChartInstance zu hydrogenChartInstance
     type: "line",
     data: {
       labels: [],
@@ -542,7 +541,7 @@ function updateHydrogenChart(newHydrogenLevel) {
   hydrogenChartInstance.update();
 }
 
-//Funktion, die jede Sekunde den neuen Batterie-Stand holt und aktualisiert
+//monitor battery and hydrogen charts
 function startMonitoring() {
   createBatteryChart();
   createHydrogenChart();
@@ -565,7 +564,7 @@ function startMonitoring() {
   }, 1000);
 }
 
-//Initial data fetch on page load
+//data fetch on page load
 window.onload = async () => {
   await loadGraphIdentifiers();
   startMonitoring();
@@ -573,25 +572,25 @@ window.onload = async () => {
   fetchData();
 };
 
-//Initial state
+//init values
 document.addEventListener("DOMContentLoaded", function () {
   const codeExpanded = document.getElementById("code-expanded");
   const codeMinimized = document.getElementById("code-minimized");
   const content = document.getElementById("corner-content");
   const toggleButton = document.getElementById("toggle-widget");
 
-  //Standardwerte setzen: Minimierte Ansicht anzeigen
+  //standard values
   content.style.height = "300px";
   content.style.width = "300px";
   toggleButton.textContent = "▲";
 
-  //Initialzustand: Minimiert
+  //init state: minimized
   codeExpanded.style.display = "none";
   codeExpanded.style.backgroundColor = "#f8f9fa";
   codeMinimized.style.display = "block";
   codeMinimized.style.backgroundColor = "#f8f9fa";
 
-  //Beim Klicken auf den Button zwischen expandiert und minimiert wechseln
+  //On Button press expand or minimize
   toggleButton.addEventListener("click", function () {
     if (codeExpanded.style.display === "none") {
       //If it's currently minimized, expand it

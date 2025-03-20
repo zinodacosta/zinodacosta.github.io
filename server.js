@@ -3,10 +3,14 @@ import fetch from "node-fetch"; //http req lib
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs"; //read and write files
-import { saveBatteryStatus, getLastBatteryStatus, saveHydrogenStatus, getLastHydrogenStatus } from './public/js/db.js'; //Verwende import
-import { saveWholeSalePrice } from "./public/js/db.js"; 
-import { getLastWholeSalePrice } from "./public/js/db.js"; 
-
+import {
+  saveBatteryStatus,
+  getLastBatteryStatus,
+  saveHydrogenStatus,
+  getLastHydrogenStatus,
+} from "./public/js/db.js"; //Verwende import
+import { saveWholeSalePrice } from "./public/js/db.js";
+import { getLastWholeSalePrice } from "./public/js/db.js";
 
 //Correct `__dirname` for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -42,7 +46,6 @@ try {
 //Serve static files from public folder directory
 app.use(express.static(path.join(__dirname, "public")));
 
-
 //Function to initialize the counter
 function initCounter() {
   let counterData = { counter: 0, lastUpdate: null };
@@ -74,7 +77,11 @@ function initCounter() {
   }
 
   //Save updated counter data back to `counter.json`
-  fs.writeFileSync(counterFilePath, JSON.stringify(counterData, null, 2), "utf-8");
+  fs.writeFileSync(
+    counterFilePath,
+    JSON.stringify(counterData, null, 2),
+    "utf-8"
+  );
   return counterData.counter;
 }
 
@@ -94,7 +101,11 @@ function getNextDayTimestamp() {
 app.post("/saveBatteryStatus", async (req, res) => {
   const { batteryLevel } = req.body;
 
-  if (batteryLevel === null || batteryLevel === undefined || isNaN(batteryLevel)) {
+  if (
+    batteryLevel === null ||
+    batteryLevel === undefined ||
+    isNaN(batteryLevel)
+  ) {
     return res.status(400).json({ error: "Invalid battery level" });
   }
 
@@ -145,7 +156,9 @@ async function fetchAndSaveWholesalePrice() {
 
   try {
     //Abruf der Wholesale-Preisliste von der API
-    const response = await fetch(`https://www.smard.de/app/chart_data/4169/DE/4169_DE_hour_${adjustedTimestamp}.json`);
+    const response = await fetch(
+      `https://www.smard.de/app/chart_data/4169/DE/4169_DE_hour_${adjustedTimestamp}.json`
+    );
     if (!response.ok) {
       throw new Error("Failed to fetch wholesale price from the external API");
     }
@@ -159,7 +172,7 @@ async function fetchAndSaveWholesalePrice() {
       const series = data.series;
 
       //Filtern der Einträge, bei denen der Wert nicht null ist
-      const validEntries = series.filter(entry => entry[1] !== null); //Entferne alle Einträge mit null als Wert
+      const validEntries = series.filter((entry) => entry[1] !== null); //Entferne alle Einträge mit null als Wert
 
       //Überprüfen, ob wir überhaupt gültige Einträge haben
       if (validEntries.length === 0) {
@@ -167,7 +180,9 @@ async function fetchAndSaveWholesalePrice() {
       }
 
       //Suche nach dem gültigen Eintrag für den aktuellen Timestamp oder den nächstgelegenen gültigen Eintrag
-      let lastEntry = validEntries.find(entry => entry[0] === currentTimestamp);
+      let lastEntry = validEntries.find(
+        (entry) => entry[0] === currentTimestamp
+      );
 
       //Wenn kein Eintrag für den aktuellen Timestamp gefunden wurde, nehme den letzten gültigen Preis
       if (!lastEntry) {
@@ -179,7 +194,6 @@ async function fetchAndSaveWholesalePrice() {
 
       //Speichern des Preises in der DB
       await saveWholeSalePrice(priceTimestamp, price);
-
     } else {
       throw new Error("API response does not have a valid 'series' array");
     }
@@ -188,7 +202,6 @@ async function fetchAndSaveWholesalePrice() {
     throw new Error("Error saving price");
   }
 }
-
 
 app.get("/get-wholesale-price", async (req, res) => {
   try {
@@ -201,29 +214,24 @@ app.get("/get-wholesale-price", async (req, res) => {
   }
 });
 
-
 app.post("/saveWholeSalePrice", async (req, res) => {
   const { timestamp, value } = req.body;
-  
 
   if (typeof timestamp !== "number") {
-      return res.status(400).json({ error: "Invalid timestamp" });
+    return res.status(400).json({ error: "Invalid timestamp" });
   }
   if (typeof value !== "number") {
-      return res.status(400).json({ error: "Invalid value" });
+    return res.status(400).json({ error: "Invalid value" });
   }
 
   try {
-      await saveWholeSalePrice(timestamp, value);  //Speichern in der Datenbank
-      res.status(200).json({ message: "Timestamp and value saved successfully" });
+    await saveWholeSalePrice(timestamp, value); //Speichern in der Datenbank
+    res.status(200).json({ message: "Timestamp and value saved successfully" });
   } catch (error) {
-      console.error("Error saving timestamp or value", error);
-      res.status(500).json({ error: "Error" });
+    console.error("Error saving timestamp or value", error);
+    res.status(500).json({ error: "Error" });
   }
 });
-
-
-
 
 //Endpoint: Provide API data
 app.get("/data", async (req, res) => {
@@ -267,7 +275,9 @@ app.get("/data", async (req, res) => {
 
     //Transform the time series data
     const transformedData = {
-      labels: rawData.series.map((entry) => new Date(entry[0]).toLocaleString()), //Format timestamps
+      labels: rawData.series.map((entry) =>
+        new Date(entry[0]).toLocaleString()
+      ), //Format timestamps
       values: rawData.series.map((entry) => entry[1]), //Extract values
     };
 
