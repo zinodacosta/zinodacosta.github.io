@@ -131,7 +131,7 @@ export class fuelcell {
       hydro.storage -= powerProduced;
 
       document.getElementById("battery-level").innerHTML =
-        charge.storage.toFixed(2) + "kWh";
+        charge.storage.toFixed(2) + " kWh";
       let batteryPercentage = (this.storage / this.capacity) * 100;
       document.getElementById("battery-gauge-percentage").innerHTML =
         batteryPercentage.toFixed(1) + " %";
@@ -365,9 +365,6 @@ export class tradeElectricity {
       charge.updateBatteryStorage(-1);
       document.getElementById("money").innerHTML =
         " : " + this.money.toFixed(2) + " €";
-    } else {
-      document.getElementById("battery-level").innerHTML =
-        "Can't sell, not enough energy stored";
     }
   }
 }
