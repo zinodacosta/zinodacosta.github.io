@@ -270,6 +270,18 @@ async function getLastWholeSalePrice() {
   }
 }
 
+async function getCarbonIntensity(){
+  try{
+    const response = await fetch("http://localhost:3000/get-carbon-intensity");
+    const data = await response.json();
+    console.log("intensity",data);
+    document.getElementById("carbon-intensity").innerHTML = data + " gCO₂/kWh";
+  }catch(error){
+    console.error("Error fetching Carbon Intensity", error);
+    return null;
+  }
+}
+
 async function fetchBatteryLevel() {
   try {
     const response = await fetch("http://localhost:3000/getBatteryStatus");
@@ -681,6 +693,7 @@ document
 //Start-Synchronisation nur einmal beim Laden
 fetchBatteryLevel();
 fetchHydrogenLevel();
+getCarbonIntensity()
 
 //Regelmäßige Updates laufen nur über updateSimulation()
 setInterval(updateSimulation, 1000);

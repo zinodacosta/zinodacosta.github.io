@@ -23,8 +23,8 @@ const port = 3000;
 //Path to `config.txt`
 const configPath = path.join(__dirname, "config.txt");
 
-//Middleware, um JSON-Daten aus dem Body zu parsen
-app.use(express.json()); //Ab Express v4.16.0 (neue Methode, bevorzugt)
+//Middleware, to parse JSON data
+app.use(express.json());
 
 //Path to the JSON file with graph identifiers
 const graphIdentifiersPath = path.join(
@@ -37,7 +37,6 @@ const graphIdentifiersPath = path.join(
 let graphIdentifiers = {};
 try {
   graphIdentifiers = JSON.parse(fs.readFileSync(graphIdentifiersPath, "utf-8")); //Parsing from JSON
-  console.log("Graph Identifiers:", graphIdentifiers); //For verification
 } catch (err) {
   console.error("Error loading graph identifiers:", err.message);
   process.exit(1);
@@ -93,8 +92,6 @@ function getNextDayTimestamp() {
   today.setUTCDate(today.getUTCDate() - counter); //Move to the days before
   const nextDayTimestamp = today.getTime(); //Get timestamp in milliseconds
   const adjustedTimestamp = nextDayTimestamp - 3600000; //Adjust timestamp by 1 hour
-  console.log("Next Day Timestamp:", nextDayTimestamp);
-  console.log("Adjusted Timestamp:", adjustedTimestamp);
   return adjustedTimestamp;
 }
 
@@ -145,9 +142,33 @@ function getCurrentHourTimestamp() {
 
   //Hole den Timestamp der nächsten vollen Stunde
   const roundedTimestamp = now.getTime();
-  console.log("Rounded Current Hour Timestamp:", roundedTimestamp);
+  console.log("Current Timestamp:", roundedTimestamp);
   return roundedTimestamp;
 }
+async function fetchCarbonIntensity() {
+  try{
+    const response = await fetch('https://api.electricitymap.org/v3/carbon-intensity/latest?zone=DE', {
+      method: 'GET',
+      headers: {
+          'auth-token': '3s7tbtJMjBVReOKeQXX6'
+      }
+  })
+  const data = await response.json();
+  return data.carbonIntensity;
+  }catch(error){
+    console.error("Error fetching carbon intensity:", error);
+}
+}
+
+app.get("/get-carbon-intensity", async (req, res) => {
+  try {
+    const carbonintensity = await fetchCarbonIntensity();
+    res.json(carbonintensity); //Schicke den Wert als JSON zurück
+  } catch (error) {
+    console.error("Error fetching wholesale price:", error);
+    res.status(500).json({ error: "Error fetching wholesale price" });
+  }
+});
 
 //Funktion zum Abrufen und Speichern des Preises
 async function fetchAndSaveWholesalePrice() {
@@ -238,7 +259,6 @@ app.get("/data", async (req, res) => {
   try {
     //Get the graph type or ID from the query parameter
     const requestedGraphType = req.query.graphType || "wholesalePrice";
-    console.log("Requested Graph Type/ID:", requestedGraphType);
 
     //Reverse lookup if the graphType is provided as an ID
     let graphKey = Object.keys(graphIdentifiers).find(
@@ -264,7 +284,6 @@ app.get("/data", async (req, res) => {
 
     //Construct the API URL with the dynamic timestamp and graph identifier
     const dynamicApiUrl = `https://www.smard.de/app/chart_data/${graphId}/DE/${graphId}_DE_hour_${nextTimestamp}.json`;
-    console.log("Dynamic API URL:", dynamicApiUrl);
 
     const response = await fetch(dynamicApiUrl); //Fetch data from the dynamic API URL
     if (!response.ok) {
@@ -342,6 +361,7 @@ app.listen(port, async () => {
   //price check on startup and save to db
   try {
     await fetchAndSaveWholesalePrice(); //Funktion, die die Preisabruf-Logik enthält
+    await fetchCarbonIntensity();
   } catch (error) {
     console.error("Error saving price on server startup:", error);
   }
