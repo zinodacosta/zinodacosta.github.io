@@ -174,6 +174,7 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
         },
       },
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           display: false,
@@ -321,6 +322,7 @@ function updateSecondChart(graphDataArray) {
           left: 20,
         },
       },
+      maintainAspectRatio: false,
       responsive: true,
       plugins: {
         legend: {
@@ -374,6 +376,7 @@ function updateSecondChart(graphDataArray) {
   });
 }
 
+//TODO make mobile dropdown menu responsive
 //Checkbox event listener
 document.querySelectorAll("input[type='checkbox']").forEach((checkbox) => {
   checkbox.addEventListener("change", () => {
@@ -391,6 +394,10 @@ document.querySelectorAll("input[type='checkbox']").forEach((checkbox) => {
     fetchDataForSecondGraph();
   });
 });
+
+
+
+
 
 //Funktion zum Erstellen des Graphen
 function createBatteryChart() {
@@ -413,6 +420,7 @@ function createBatteryChart() {
       ],
     },
     options: {
+      maintainAspectRatio: false,
       responsive: true,
       plugins: {
         legend: { display: false },
@@ -489,6 +497,7 @@ function createHydrogenChart() {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
         tooltip: { enabled: true },
@@ -578,6 +587,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const codeMinimized = document.getElementById("code-minimized");
   const content = document.getElementById("corner-content");
   const toggleButton = document.getElementById("toggle-widget");
+  
 
   //standard values
   content.style.height = "300px";

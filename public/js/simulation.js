@@ -334,24 +334,25 @@ export class tradeElectricity {
 
   async buyElectricity() {
     if (this.money > 0) {
-      if (charge.storage + 1 <= charge.capacity) {
-        if (this.electricityPrice === null || isNaN(this.electricityPrice)) {
-          await this.priceCheck();
-          if (this.electricityPrice === null || isNaN(this.electricityPrice))
-            return;
+      if (this.electricityPrice > 10) {
+        if (charge.storage + 1 <= charge.capacity) {
+          if (this.electricityPrice === null || isNaN(this.electricityPrice)) {
+            await this.priceCheck();
+            if (this.electricityPrice === null || isNaN(this.electricityPrice))
+              return;
+          }
+          console.log("Bought 1kWh");
+          this.money -= this.electricityPrice * 0.1;
+          charge.updateBatteryStorage(1);
+          document.getElementById("money").innerHTML =
+            " : " + this.money.toFixed(2) + " €";
+        } else {
+          document.getElementById("battery-level").innerHTML =
+            "Can't buy, battery is full";
         }
-        console.log("Bought 1kWh");
-        this.money -= this.electricityPrice * 0.1;
-        charge.updateBatteryStorage(1);
-        document.getElementById("money").innerHTML =
-          " : " + this.money.toFixed(2) + " €";
-      } else {
-        document.getElementById("battery-level").innerHTML =
-          "Can't buy, battery is full";
       }
     }
   }
-
   async sellElectricity() {
     if (charge.storage >= 1) {
       if (this.electricityPrice === null || isNaN(this.electricityPrice)) {

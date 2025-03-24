@@ -89,27 +89,41 @@
           
             <div class="checkbox-container">
               <div class="checkbox-group">
-                <input type="checkbox" id="browncoal" value="browncoal" /> Brown Coal
-                <input type="checkbox" id="biomass" value="biomass" /> Biomass
-                <input type="checkbox" id="windoffshore" value="windoffshore" /> Wind Offshore
-                <input type="checkbox" id="windonshore" value="windonshore" /> Wind Onshore
-                <input type="checkbox" id="hydroelectric" value="hydroelectric" /> Hydroelectric
+                <input type="checkbox" value="browncoal" /> Brown Coal
+                <input type="checkbox" value="biomass" /> Biomass
+                <input type="checkbox" value="windoffshore" /> Wind Offshore
+                <input type="checkbox" value="windonshore" /> Wind Onshore
+                <input type="checkbox" value="hydroelectric" /> Hydroelectric
               </div>
               <div class="checkbox-group">
 
-                <input type="checkbox" id="naturalgas" value="naturalgas" /> Natural Gas
-                <input type="checkbox" id="blackcoal" value="blackcoal" /> Black Coal
-                <input type="checkbox" id="photovoltaik" value="photovoltaik" /> Photovoltaik
-
-                <input type="checkbox" id="otherconventional" value="otherconventional" /> Other Conventional
-                <input type="checkbox" id="otherrenewable" value="otherrenewable" /> Other Renewable
+                <input type="checkbox" value="naturalgas" /> Natural Gas
+                <input type="checkbox" value="blackcoal" /> Black Coal
+                <input type="checkbox" value="photovoltaik" /> Photovoltaik
+                <input type="checkbox" value="otherconventional" /> Other Conventional
+                <input type="checkbox" alue="otherrenewable" /> Other Renewable
               </div>
+            </div>
+
+            <div class="dropdown-container">
+              <select id="mobile-dropdown">
+                <option id="browncoal"> Brown Coal</option>
+                <option id="biomass"> Biomass</option>
+                <option id="windoffshore"> Wind Offshore</option>
+                <option id="windonshore"> Wind Onshore</option>
+                <option id="hydroelectric"> Hydroelectric</option>
+                <option id="naturalgas"> Natural Gas</option>
+                <option id="blackcoal"> Black Coal</option>
+                <option id="photovoltaik"> Photovoltaik</option>
+                <option id="otherconventional"> Other Conventional</option>
+                <option id="otherrenewable"> Other Renewable</option>
+              </select>
             </div>
           
             <canvas id="myChart2" width="400" height="85"></canvas>
           </div>
 
-          
+
             <!-- Hydrogen Eco System Section -->
             <h2>Hydrogen Eco Simulation</h2>
             <div class="eco-system-container">
@@ -314,9 +328,9 @@
               </div>
             </div>
             <h2>Battery Storage</h2>
-            <canvas id="batteryChart" width="400" height="70"></canvas>
+            <canvas id="batteryChart"></canvas>
             <h2>Hydrogen Storage</h2>
-            <canvas id="hydrogenChart" width="400" height="70"></canvas>
+            <canvas id="hydrogenChart"></canvas>
           </div>
         </div>
       </div>
