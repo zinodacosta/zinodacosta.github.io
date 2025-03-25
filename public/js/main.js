@@ -121,6 +121,17 @@ async function fetchData() {
         "Data structure is incorrect. Expected labels and values arrays."
       );
     }
+    //Filtering out null values
+    const filteredLabels = [];
+    const filteredValues = [];
+    
+    data.values.forEach((value, index) => {
+      if (value !== null) {
+        filteredLabels.push(data.labels[index]);
+        filteredValues.push(value);
+      }
+    });
+
 
     //Destroy existing chart instance to avoid overlapping
     if (myChartInstance) {
@@ -130,7 +141,7 @@ async function fetchData() {
     const color = graphData ? graphData.color : "rgb(0, 0, 0)";
     const label = graphData ? graphData.label : "Unknown Graph";
 
-    createChart("myChart", data.labels, data.values, label, color);
+    createChart("myChart", filteredLabels, filteredValues, label, color);
 
     //Fetch data for the second chart
     fetchDataForSecondGraph();
@@ -271,10 +282,19 @@ async function fetchDataForSecondGraph() {
         if (!data.labels || !data.values) {
           throw new Error("Data structure for the second chart is incorrect.");
         }
-
+            //Filtering out null values
+    const filteredLabels = [];
+    const filteredValues = [];
+    
+    data.values.forEach((value, index) => {
+      if (value !== null) {
+        filteredLabels.push(data.labels[index]);
+        filteredValues.push(value);
+      }
+    });
         return {
-          labels: data.labels.map((label) => new Date(label)),
-          values: data.values,
+          labels: filteredLabels.map((label) => new Date(label)),
+          values: filteredValues,
           label: graphData.label || graphType,
           borderColor: graphData.color || "rgb(0, 0, 0)",
         };
