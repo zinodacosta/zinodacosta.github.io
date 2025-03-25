@@ -205,6 +205,11 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
         mode: "index",
         intersect: false,
       },
+      elements:{
+        legend:{
+          borderRadius: 10,
+        },
+      },
       scales: {
         x: {
           ticks: {
@@ -221,6 +226,7 @@ function createChart(canvasId, labels, values, labelName, borderColor) {
             },
           },
         },
+        
         y: {
           ticks: {
             font: {
@@ -282,7 +288,8 @@ async function fetchDataForSecondGraph() {
         if (!data.labels || !data.values) {
           throw new Error("Data structure for the second chart is incorrect.");
         }
-            //Filtering out null values
+
+    //Filtering out null values
     const filteredLabels = [];
     const filteredValues = [];
     
@@ -341,6 +348,12 @@ function updateSecondChart(graphDataArray) {
         padding: {
           left: 20,
         },
+      },
+      elements:{
+        legend:{
+          borderRadius: 10,
+        },
+        
       },
       maintainAspectRatio: false,
       responsive: true,
@@ -413,6 +426,22 @@ document.querySelectorAll("input[type='checkbox']").forEach((checkbox) => {
 
     fetchDataForSecondGraph();
   });
+});
+
+document.querySelector("#mobile-dropdown").addEventListener("change", () => {
+  const selectedOptions = document.querySelectorAll("#mobile-dropdown option:checked");
+
+  //get value of select
+  const selectedValues = Array.from(selectedOptions).map(option => option.value);
+
+  //actual electricity consumption always selected
+  if (!selectedValues.includes("actualelectricityconsumption")) {
+    selectedValues.unshift("actualelectricityconsumption");
+  }
+
+  graphTypesForSecondChart = selectedValues;
+
+  fetchDataForSecondGraph();
 });
 
 
