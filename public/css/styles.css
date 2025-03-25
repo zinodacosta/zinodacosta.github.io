@@ -10,9 +10,7 @@ body {
 }
 
 #graph-selector2 {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
+    border: 50%;
   }
 
 
@@ -159,6 +157,7 @@ footer {
 
 /* Media query for smaller screens */
 @media (max-width: 768px) {
+
     body {
         font-size: 16px;
     }
@@ -184,6 +183,7 @@ footer {
     .start{
         flex: 0 2 100%;
         max-width: 30%;
+        padding: 10px 10px!important;
     }
     .stop{
         flex: 0 2 100%;
@@ -205,6 +205,7 @@ footer {
     display: block;
     text-align: center;
     margin-top: 10px;
+    border-radius: 30px;
 }
 
 
@@ -212,8 +213,10 @@ footer {
     width: 80%;
     padding: 10px;
     font-size: 16px;
-    border-radius: 5px;
     border: 1px solid #ccc;
+    text-align: center;
+    margin-top: 10px;
+    border-radius: 30px;
 }
 
 .eco-item {
@@ -223,12 +226,13 @@ footer {
     border-radius: 8px;
     background-color: #fff;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 10px !important;
 }
 
 .eco-system-container {
     display: block !important;
     gap: 20px !important; /* Ensure this property applies */
-    margin-top: 40px !important;
+    margin-top: -30px !important;
 }
 
 
@@ -268,7 +272,20 @@ footer {
 }
 
 /* media end */
+
 }
+
+#city-select{
+    background-color: rgb(243, 243, 243);
+    color: rgb(0, 0, 0);
+    border: 1px solid #000000;
+    padding: 10px 21px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+}
+
 .button-container {
     display: flex;
     justify-content: center;
@@ -281,7 +298,7 @@ footer {
     background-color: #111111;
     color: white;
     border: none;
-    padding: 10px 15px;
+    padding: 10px 10px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -348,6 +365,8 @@ label {
 }
 
 .eco-system-container {
+    padding: 2px;
+    margin: 10px;
     display: flex;
     justify-content: space-between; 
     gap: 20px; 
@@ -615,15 +634,7 @@ label {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-#code-minimized {
-    background-color: #f8f9fa;
-    display: block;
-    height: auto; 
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+
 
 #pv-charging-arrow,
 #electrolyzer-charging-arrow,

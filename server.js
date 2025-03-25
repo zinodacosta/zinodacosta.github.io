@@ -72,7 +72,7 @@ function initCounter() {
       `Counter updated to ${counterData.counter} for date: ${currentDate}`
     );
   } else {
-    console.log(`Counter remains unchanged at ${counterData.counter}`);
+    
   }
 
   //Save updated counter data back to `counter.json`
@@ -120,7 +120,7 @@ app.post("/saveHydrogenStatus", async (req, res) => {
   const { hydrogenLevel } = req.body;
 
   try {
-    //Speichere den Batteriestand in der Datenbank
+    //Save the hydrogen level to the database
     await saveHydrogenStatus(hydrogenLevel);
     res.status(200).json({ message: "Hydrogen status saved successfully" });
   } catch (error) {
@@ -130,17 +130,17 @@ app.post("/saveHydrogenStatus", async (req, res) => {
 });
 
 function getCurrentHourTimestamp() {
-  const now = new Date(); //Aktuelle Zeit
+  const now = new Date(); //current time
 
-  //Setze Minuten, Sekunden und Millisekunden auf null
+  //set the minutes and seconds to 0
   now.setMinutes(0, 0, 0);
 
-  //Wenn die aktuelle Minute nicht 0 ist, runde auf die nächste Stunde auf
+  //Round to the next hour if the current minute is not 0
   if (now.getMinutes() !== 0) {
     now.setHours(now.getHours() + 1);
   }
 
-  //Hole den Timestamp der nächsten vollen Stunde
+  //get timestamp in milliseconds
   const roundedTimestamp = now.getTime();
   console.log("Current Timestamp:", roundedTimestamp);
   return roundedTimestamp;
@@ -163,20 +163,20 @@ async function fetchCarbonIntensity() {
 app.get("/get-carbon-intensity", async (req, res) => {
   try {
     const carbonintensity = await fetchCarbonIntensity();
-    res.json(carbonintensity); //Schicke den Wert als JSON zurück
+    res.json(carbonintensity); //Send the value as JSON
   } catch (error) {
     console.error("Error fetching wholesale price:", error);
     res.status(500).json({ error: "Error fetching wholesale price" });
   }
 });
 
-//Funktion zum Abrufen und Speichern des Preises
+//function to fetch and save the wholesale price
 async function fetchAndSaveWholesalePrice() {
   const adjustedTimestamp = getNextDayTimestamp();
   const currentTimestamp = getCurrentHourTimestamp();
 
   try {
-    //Abruf der Wholesale-Preisliste von der API
+    //fetch the wholesale price data from the external API
     const response = await fetch(
       `https://www.smard.de/app/chart_data/4169/DE/4169_DE_hour_${adjustedTimestamp}.json`
     );
@@ -184,36 +184,36 @@ async function fetchAndSaveWholesalePrice() {
       throw new Error("Failed to fetch wholesale price from the external API");
     }
 
-    //Extrahiere den Preis aus der API-Antwort
+    //extract the JSON data from the response
     const data = await response.json();
 
-    //Prüfen, ob die Antwort das richtige Format hat
+    //check if the response has the expected structure
     if (data && data.series && Array.isArray(data.series)) {
-      //Wenn die Antwort eine series enthält und diese ein Array ist, verwenden wir die series
+      //extract the series data from the API response
       const series = data.series;
 
-      //Filtern der Einträge, bei denen der Wert nicht null ist
-      const validEntries = series.filter((entry) => entry[1] !== null); //Entferne alle Einträge mit null als Wert
+      //filter out the entries with null values
+      const validEntries = series.filter((entry) => entry[1] !== null); //remove entries with null values
 
-      //Überprüfen, ob wir überhaupt gültige Einträge haben
+      //check if there are any valid entries
       if (validEntries.length === 0) {
         throw new Error("No valid price data found for the current timestamp.");
       }
 
-      //Suche nach dem gültigen Eintrag für den aktuellen Timestamp oder den nächstgelegenen gültigen Eintrag
+      //search for the entry with the current timestamp
       let lastEntry = validEntries.find(
         (entry) => entry[0] === currentTimestamp
       );
 
-      //Wenn kein Eintrag für den aktuellen Timestamp gefunden wurde, nehme den letzten gültigen Preis
+      //if the entry with the current timestamp is not found, use the last valid entry
       if (!lastEntry) {
-        lastEntry = validEntries[validEntries.length - 1]; //Nimm den letzten gültigen Eintrag
+        lastEntry = validEntries[validEntries.length - 1]; //use last valid entry
       }
 
-      const price = lastEntry[1]; //Der Wert des letzten gültigen Eintrags
-      const priceTimestamp = lastEntry[0]; //Der Timestamp des letzten gültigen Eintrags
+      const price = lastEntry[1]; //value of the last valid entry
+      const priceTimestamp = lastEntry[0]; //timestamp of the last valid entry
 
-      //Speichern des Preises in der DB
+      //save in db
       await saveWholeSalePrice(priceTimestamp, price);
     } else {
       throw new Error("API response does not have a valid 'series' array");
@@ -226,9 +226,9 @@ async function fetchAndSaveWholesalePrice() {
 
 app.get("/get-wholesale-price", async (req, res) => {
   try {
-    //Hole den gespeicherten Wert aus der Datenbank oder der Datei
+    //get the last wholesale price from the database
     const priceData = await getLastWholeSalePrice();
-    res.json(priceData); //Schicke den Wert als JSON zurück
+    res.json(priceData); //send the value as JSON
   } catch (error) {
     console.error("Error fetching wholesale price:", error);
     res.status(500).json({ error: "Error fetching wholesale price" });
@@ -246,7 +246,7 @@ app.post("/saveWholeSalePrice", async (req, res) => {
   }
 
   try {
-    await saveWholeSalePrice(timestamp, value); //Speichern in der Datenbank
+    await saveWholeSalePrice(timestamp, value); //save in db
     res.status(200).json({ message: "Timestamp and value saved successfully" });
   } catch (error) {
     console.error("Error saving timestamp or value", error);
@@ -326,7 +326,7 @@ app.get("/", (req, res) => {
   });
 });
 
-//Route zum Abrufen des letzten Batterielevels
+//get last battery status
 app.get("/getBatteryStatus", async (req, res) => {
   try {
     const lastBatteryStatus = await getLastBatteryStatus();
@@ -340,7 +340,7 @@ app.get("/getBatteryStatus", async (req, res) => {
   }
 });
 
-//Route zum Abrufen des letzten Hydrogenlevels
+//get last hydrogen status
 app.get("/getHydrogenStatus", async (req, res) => {
   try {
     const lastHydrogenStatus = await getLastHydrogenStatus();
@@ -360,7 +360,7 @@ app.listen(port, async () => {
 
   //price check on startup and save to db
   try {
-    await fetchAndSaveWholesalePrice(); //Funktion, die die Preisabruf-Logik enthält
+    await fetchAndSaveWholesalePrice(); 
     await fetchCarbonIntensity();
   } catch (error) {
     console.error("Error saving price on server startup:", error);

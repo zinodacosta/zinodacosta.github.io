@@ -22,7 +22,6 @@ export async function saveBatteryStatus(batteryLevel) {
     const writeApiBattery = client.getWriteApi(org, "Simulation");
     writeApiBattery.writePoint(point);
     await writeApiBattery.flush();
-    //console.log("Battery status saved:", batteryLevel.toFixed(2), "kWh");
   } catch (error) {
     console.error("Error saving battery status:", error);
   }
