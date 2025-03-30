@@ -19,6 +19,8 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+
+
 export class photovoltaik {
   constructor() {
     this.power = 250; //Watt
@@ -117,6 +119,7 @@ export class fuelcell {
   updateFuelCellPower(amount) {
     this.power = amount;
   }
+
   produceElectricity() {
     if (hydro.storage > 0) {
       let powerProduced =
@@ -470,7 +473,7 @@ async function updateSimulation() {
     "--after-top",
     (hydro.storage / hydro.capacity) * 100 * -1 - 15 + "%"
   );
-  //TODO fix overflow of wave loader
+
 }
 
 function resetSimulation() {
@@ -630,6 +633,149 @@ document.addEventListener("DOMContentLoaded", function () {
   if (buyButton) {
     buyButton.addEventListener("click", trade.buyElectricity.bind(trade));
   }
+
+  const usecase = document.getElementById("use-case");
+  
+  usecase.addEventListener("change", function () { // Update values when selection changes
+    if (usecase.value === "offgrid") {
+      pv.updatePVPower(10000);
+      PVPowerValueDisplay.textContent = 10 + "kW";
+      PVPowerSlider.value = 10000;
+      pv.updatePVEfficiency(0.22);
+      PVEfficiencyValueDisplay.textContent = 22 + "%";
+      PVEfficiencySlider.value = 22;
+
+      charge.updateBatteryEfficiency(0.95);
+      batteryEfficiencyValueDisplay.textContent = 95 + "%";
+      batteryEfficiencySlider.value = 95;
+      charge.updateBatteryCapacity(20);
+      batteryCapacityValueDisplay.textContent = 20 + "kWh";
+      batteryCapacitySlider.value = 20;
+
+      hydro.updateElectrolyzerPower(5000);
+      electrolyzerPowerValueDisplay.textContent = 5000 + "W";
+      electrolyzerPowerSlider.value = 5000;
+      hydro.updateElectrolyzerEfficiency(0.7);
+      electrolyzerEfficiencyValueDisplay.textContent = 70 + "%";
+      electrolyzerEfficiencySlider.value = 70;
+      hydro.updateElectrolyzerCapacity(300);
+      electrolyzerCapacityValueDisplay.textContent = 300 + "g";
+      electrolyzerCapacitySlider.value = 300;
+
+      fc.updateFuelCellPower(3000);
+      fuelcellPowerSlider.value = 3000;
+      fuelcellPowerValueDisplay.textContent = 3000 + "W";
+      fc.updateFuelCellEfficiency(0.6);
+      fuelcellEfficiencyValueDisplay.textContent = 60 + "%";
+      fuelcellEfficiencySlider.value = 60;
+    }
+
+    if (usecase.value === "microgrid") {
+
+      pv.updatePVPower(200000);
+      PVPowerValueDisplay.textContent = 200 + "kW";
+      PVPowerSlider.value = 200000;
+      pv.updatePVEfficiency(0.22);
+      PVEfficiencyValueDisplay.textContent = 22 + "%";
+      PVEfficiencySlider.value = 22;
+
+      charge.updateBatteryEfficiency(0.95);
+      batteryEfficiencyValueDisplay.textContent = 95 + "%";
+      batteryEfficiencySlider.value = 95;
+      charge.updateBatteryCapacity(500);
+      batteryCapacityValueDisplay.textContent = 500 + "kWh";
+      batteryCapacitySlider.value = 500;
+
+      hydro.updateElectrolyzerPower(100000);
+      electrolyzerPowerValueDisplay.textContent = 100 + "kW";
+      electrolyzerPowerSlider.value = 100000;
+      hydro.updateElectrolyzerEfficiency(0.7);
+      electrolyzerEfficiencyValueDisplay.textContent = 70 + "%";
+      electrolyzerEfficiencySlider.value = 70;
+      hydro.updateElectrolyzerCapacity(3000);
+      electrolyzerCapacityValueDisplay.textContent = 3000 + "g";
+      electrolyzerCapacitySlider.value = 3000;
+
+      fc.updateFuelCellPower(80000);
+      fuelcellPowerSlider.value = 80000;
+      fuelcellPowerValueDisplay.textContent = 80 + "kW";
+      fc.updateFuelCellEfficiency(0.6);
+      fuelcellEfficiencyValueDisplay.textContent = 60 + "%";
+      fuelcellEfficiencySlider.value = 60;
+    }
+
+    if (usecase.value === "evcharge") {
+
+      pv.updatePVPower(500000);
+      PVPowerValueDisplay.textContent = 500 + "kW";
+      PVPowerSlider.value = 500000;
+      pv.updatePVEfficiency(0.22);
+      PVEfficiencyValueDisplay.textContent = 22 + "%";
+      PVEfficiencySlider.value = 22;
+
+      charge.updateBatteryEfficiency(0.95);
+      batteryEfficiencyValueDisplay.textContent = 95 + "%";
+      batteryEfficiencySlider.value = 95;
+      charge.updateBatteryCapacity(1000);
+      batteryCapacityValueDisplay.textContent = 1000 + "kWh";
+      batteryCapacitySlider.value = 1000;
+
+      hydro.updateElectrolyzerPower(200000);
+      electrolyzerPowerValueDisplay.textContent = 200 + "kW";
+      electrolyzerPowerSlider.value = 200000;
+      hydro.updateElectrolyzerEfficiency(0.7);
+      electrolyzerEfficiencyValueDisplay.textContent = 70 + "%";
+      electrolyzerEfficiencySlider.value = 70;
+      hydro.updateElectrolyzerCapacity(12000);
+      electrolyzerCapacityValueDisplay.textContent = 12000 + "g";
+      electrolyzerCapacitySlider.value = 12000;
+
+      fc.updateFuelCellPower(200000);
+      fuelcellPowerSlider.value = 200000;
+      fuelcellPowerValueDisplay.textContent = 200 + "kW";
+      fc.updateFuelCellEfficiency(0.6);
+      fuelcellEfficiencyValueDisplay.textContent = 60 + "%";
+      fuelcellEfficiencySlider.value = 60;
+    }
+
+    if (usecase.value === "industrial") {
+      pv.updatePVPower(10000000);
+      PVPowerValueDisplay.textContent = 10 + "MW";
+      PVPowerSlider.value = 10000000;
+      pv.updatePVEfficiency(0.22);
+      PVEfficiencyValueDisplay.textContent = 22 + "%";
+      PVEfficiencySlider.value = 22;
+
+      charge.updateBatteryEfficiency(0.95);
+      batteryEfficiencyValueDisplay.textContent = 95 + "%";
+      batteryEfficiencySlider.value = 95;
+      charge.updateBatteryCapacity(10000000);
+      batteryCapacityValueDisplay.textContent = 10 + "MWh";
+      batteryCapacitySlider.value = 10000000;
+
+      hydro.updateElectrolyzerPower(5000000);
+      electrolyzerPowerValueDisplay.textContent = 5 + "MW";
+      electrolyzerPowerSlider.value = 5000000;
+      hydro.updateElectrolyzerEfficiency(0.7);
+      electrolyzerEfficiencyValueDisplay.textContent = 70 + "%";
+      electrolyzerEfficiencySlider.value = 70;
+      hydro.updateElectrolyzerCapacity(500000);
+      electrolyzerCapacityValueDisplay.textContent = 500000 + "g";
+      electrolyzerCapacitySlider.value = 500000;
+
+      fc.updateFuelCellPower(2000000);
+      fuelcellPowerSlider.value = 2000000;
+      fuelcellPowerValueDisplay.textContent = 2 + "MW";
+      fc.updateFuelCellEfficiency(0.6);
+      fuelcellEfficiencyValueDisplay.textContent = 60 + "%";
+      fuelcellEfficiencySlider.value = 60;
+    }
+  });
+
+  // Trigger change event on page load to set initial values
+  usecase.dispatchEvent(new Event("change"));
+
+
 });
 
 //Buttons für die Simulation
@@ -690,6 +836,8 @@ document
     }
   });
 
+
+
 //Start-Synchronisation nur einmal beim Laden
 fetchBatteryLevel();
 fetchHydrogenLevel();
@@ -697,3 +845,9 @@ getCarbonIntensity()
 
 //Regelmäßige Updates laufen nur über updateSimulation()
 setInterval(updateSimulation, 1000);
+
+
+//TODO- spezifische use cases integrieren 
+//TODO- usability 
+//TODO- farbschema an website anpassen
+
