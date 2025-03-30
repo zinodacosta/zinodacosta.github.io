@@ -1,6 +1,7 @@
 let electrolyzerInterval = null;
 let fuelCellInterval = null;
 let speedfactor = 1;
+let currentState = "";
 
 const apiKey = "e7c7b0c5b06544339dd03539253001";
 let city = "Frankfurt";
@@ -185,8 +186,14 @@ export class electrolyzer {
         document.getElementById("hydrogen-level").innerHTML =
           this.storage.toFixed(2) + " g";
         let hydrogenPercentage = (this.storage / this.capacity) * 100;
-        document.getElementById("simulation-state").innerHTML =
-          " Hydrogen Mode ";
+        if(document.getElementById("simulation-state").innerHTML === "Charge Mode"){
+          document.getElementById("simulation-state").innerHTML =
+          "Charge Mode + Hydrogen Mode ";
+        }
+        else{
+          document.getElementById("simulation-state").innerHTML =
+          "Hydrogen Mode ";
+        }
         document.getElementById("hydrogen-gauge-percentage").innerHTML =
           hydrogenPercentage.toFixed(1) + " %";
         document.getElementById("hydrogen-gauge-level").style.width =
@@ -637,15 +644,31 @@ document.addEventListener("DOMContentLoaded", function () {
   const usecase = document.getElementById("use-case");
   
   usecase.addEventListener("change", function () { // Update values when selection changes
+    const bulletPointsContainer = document.getElementById("bullet-points-container");
+    bulletPointsContainer.innerHTML = "";
+
+    let bulletPoints = [];
+
     if (usecase.value === "offgrid") {
+      bulletPoints = [
+        "A house powered by solar panels, with a battery for short-term storage and a hydrogen system for long-term energy storage.",
+
+        "During the day, excess solar power is used to generate hydrogen via electrolysis.",
+        
+        "At night or on cloudy days, the fuel cell converts hydrogen back into electricity.",
+        
+        "The system sells excess electricity to the grid when prices are high and buys when prices are low."
+
+      ];
+      resetSimulation();
       pv.updatePVPower(10000);
       PVPowerValueDisplay.textContent = 10 + "kW";
       PVPowerSlider.value = 10000;
-      pv.updatePVEfficiency(0.22);
+      pv.updatePVEfficiency(22);
       PVEfficiencyValueDisplay.textContent = 22 + "%";
       PVEfficiencySlider.value = 22;
 
-      charge.updateBatteryEfficiency(0.95);
+      charge.updateBatteryEfficiency(95);
       batteryEfficiencyValueDisplay.textContent = 95 + "%";
       batteryEfficiencySlider.value = 95;
       charge.updateBatteryCapacity(20);
@@ -655,7 +678,7 @@ document.addEventListener("DOMContentLoaded", function () {
       hydro.updateElectrolyzerPower(5000);
       electrolyzerPowerValueDisplay.textContent = 5000 + "W";
       electrolyzerPowerSlider.value = 5000;
-      hydro.updateElectrolyzerEfficiency(0.7);
+      hydro.updateElectrolyzerEfficiency(70);
       electrolyzerEfficiencyValueDisplay.textContent = 70 + "%";
       electrolyzerEfficiencySlider.value = 70;
       hydro.updateElectrolyzerCapacity(300);
@@ -665,21 +688,30 @@ document.addEventListener("DOMContentLoaded", function () {
       fc.updateFuelCellPower(3000);
       fuelcellPowerSlider.value = 3000;
       fuelcellPowerValueDisplay.textContent = 3000 + "W";
-      fc.updateFuelCellEfficiency(0.6);
+      fc.updateFuelCellEfficiency(60);
       fuelcellEfficiencyValueDisplay.textContent = 60 + "%";
       fuelcellEfficiencySlider.value = 60;
     }
 
     if (usecase.value === "microgrid") {
+      bulletPoints = [
+        "A small community with unreliable grid access uses solar panels, batteries, and hydrogen storage for 24/7 power.",
 
+        "The system optimizes energy flow, prioritizing battery storage for short-term demand and hydrogen for seasonal storage.",
+        
+        "Villagers share a common energy trading system, where surplus power is bought and sold dynamically."
+        
+
+      ];
+      resetSimulation();
       pv.updatePVPower(200000);
       PVPowerValueDisplay.textContent = 200 + "kW";
       PVPowerSlider.value = 200000;
-      pv.updatePVEfficiency(0.22);
+      pv.updatePVEfficiency(22);
       PVEfficiencyValueDisplay.textContent = 22 + "%";
       PVEfficiencySlider.value = 22;
 
-      charge.updateBatteryEfficiency(0.95);
+      charge.updateBatteryEfficiency(95);
       batteryEfficiencyValueDisplay.textContent = 95 + "%";
       batteryEfficiencySlider.value = 95;
       charge.updateBatteryCapacity(500);
@@ -689,7 +721,7 @@ document.addEventListener("DOMContentLoaded", function () {
       hydro.updateElectrolyzerPower(100000);
       electrolyzerPowerValueDisplay.textContent = 100 + "kW";
       electrolyzerPowerSlider.value = 100000;
-      hydro.updateElectrolyzerEfficiency(0.7);
+      hydro.updateElectrolyzerEfficiency(70);
       electrolyzerEfficiencyValueDisplay.textContent = 70 + "%";
       electrolyzerEfficiencySlider.value = 70;
       hydro.updateElectrolyzerCapacity(3000);
@@ -699,21 +731,29 @@ document.addEventListener("DOMContentLoaded", function () {
       fc.updateFuelCellPower(80000);
       fuelcellPowerSlider.value = 80000;
       fuelcellPowerValueDisplay.textContent = 80 + "kW";
-      fc.updateFuelCellEfficiency(0.6);
+      fc.updateFuelCellEfficiency(60);
       fuelcellEfficiencyValueDisplay.textContent = 60 + "%";
       fuelcellEfficiencySlider.value = 60;
     }
 
     if (usecase.value === "evcharge") {
+      bulletPoints = [
+        "A charging station for electric vehicles powered by solar energy, with a battery for quick power delivery and hydrogen for backup.",
 
+        "When there’s surplus solar power, it’s used to generate hydrogen instead of wasting energy.",
+        
+        "The station dynamically adjusts pricing based on energy availability and grid prices."
+      
+      ];
+      resetSimulation();
       pv.updatePVPower(500000);
       PVPowerValueDisplay.textContent = 500 + "kW";
       PVPowerSlider.value = 500000;
-      pv.updatePVEfficiency(0.22);
+      pv.updatePVEfficiency(22);
       PVEfficiencyValueDisplay.textContent = 22 + "%";
       PVEfficiencySlider.value = 22;
 
-      charge.updateBatteryEfficiency(0.95);
+      charge.updateBatteryEfficiency(95);
       batteryEfficiencyValueDisplay.textContent = 95 + "%";
       batteryEfficiencySlider.value = 95;
       charge.updateBatteryCapacity(1000);
@@ -723,7 +763,7 @@ document.addEventListener("DOMContentLoaded", function () {
       hydro.updateElectrolyzerPower(200000);
       electrolyzerPowerValueDisplay.textContent = 200 + "kW";
       electrolyzerPowerSlider.value = 200000;
-      hydro.updateElectrolyzerEfficiency(0.7);
+      hydro.updateElectrolyzerEfficiency(70);
       electrolyzerEfficiencyValueDisplay.textContent = 70 + "%";
       electrolyzerEfficiencySlider.value = 70;
       hydro.updateElectrolyzerCapacity(12000);
@@ -733,43 +773,65 @@ document.addEventListener("DOMContentLoaded", function () {
       fc.updateFuelCellPower(200000);
       fuelcellPowerSlider.value = 200000;
       fuelcellPowerValueDisplay.textContent = 200 + "kW";
-      fc.updateFuelCellEfficiency(0.6);
+      fc.updateFuelCellEfficiency(60);
       fuelcellEfficiencyValueDisplay.textContent = 60 + "%";
       fuelcellEfficiencySlider.value = 60;
     }
 
     if (usecase.value === "industrial") {
-      pv.updatePVPower(10000000);
-      PVPowerValueDisplay.textContent = 10 + "MW";
-      PVPowerSlider.value = 10000000;
-      pv.updatePVEfficiency(0.22);
+
+      bulletPoints = [
+        "A factory with high energy demand uses solar power to generate hydrogen, which is stored for later use in production or fuel cells.",
+
+        "When electricity prices are low, the factory buys from the grid; when high, it switches to stored hydrogen.",
+        
+        "The plant sells excess hydrogen or electricity back to the grid for profit."
+      
+      ];
+      resetSimulation();
+      pv.updatePVPower(1000000);
+      PVPowerValueDisplay.textContent = 1 + "MW";
+      PVPowerSlider.value = 1000000;
+      pv.updatePVEfficiency(22);
       PVEfficiencyValueDisplay.textContent = 22 + "%";
       PVEfficiencySlider.value = 22;
 
-      charge.updateBatteryEfficiency(0.95);
+      charge.updateBatteryEfficiency(95);
       batteryEfficiencyValueDisplay.textContent = 95 + "%";
       batteryEfficiencySlider.value = 95;
       charge.updateBatteryCapacity(10000000);
       batteryCapacityValueDisplay.textContent = 10 + "MWh";
-      batteryCapacitySlider.value = 10000000;
+      batteryCapacitySlider.value = 1000000;
 
-      hydro.updateElectrolyzerPower(5000000);
-      electrolyzerPowerValueDisplay.textContent = 5 + "MW";
-      electrolyzerPowerSlider.value = 5000000;
-      hydro.updateElectrolyzerEfficiency(0.7);
+      hydro.updateElectrolyzerPower(1000000);
+      electrolyzerPowerValueDisplay.textContent = 1 + "MW";
+      electrolyzerPowerSlider.value = 1000000;
+      hydro.updateElectrolyzerEfficiency(70);
       electrolyzerEfficiencyValueDisplay.textContent = 70 + "%";
       electrolyzerEfficiencySlider.value = 70;
       hydro.updateElectrolyzerCapacity(500000);
-      electrolyzerCapacityValueDisplay.textContent = 500000 + "g";
+      electrolyzerCapacityValueDisplay.textContent = 500 + "kg";
       electrolyzerCapacitySlider.value = 500000;
 
-      fc.updateFuelCellPower(2000000);
-      fuelcellPowerSlider.value = 2000000;
-      fuelcellPowerValueDisplay.textContent = 2 + "MW";
-      fc.updateFuelCellEfficiency(0.6);
+      fc.updateFuelCellPower(1000000);
+      fuelcellPowerSlider.value = 1000000;
+      fuelcellPowerValueDisplay.textContent = 1 + "MW";
+      fc.updateFuelCellEfficiency(60);
       fuelcellEfficiencyValueDisplay.textContent = 60 + "%";
       fuelcellEfficiencySlider.value = 60;
     }
+    
+    const ul = document.createElement("ul");
+
+    bulletPoints.forEach(point => {
+      const li = document.createElement("li");
+      li.textContent = point;
+      ul.appendChild(li);
+    });
+
+    // Append the bullet points to the container
+    bulletPointsContainer.appendChild(ul);
+
   });
 
   // Trigger change event on page load to set initial values
@@ -836,6 +898,28 @@ document
     }
   });
 
+  const priceContainer = document.getElementById("price-container");
+  const co2Container = document.getElementById("co2-container");
+
+  let isPriceVisible = true;
+
+  function togglePrices() {
+    if (isPriceVisible) {
+      // Slide price container out to the left and CO2 container in from the right
+      priceContainer.style.transform = "translateX(-100%)"; // Price moves out of bounds
+      co2Container.style.transform = "translateX(0)"; // CO2 comes into view
+    } else {
+      // Slide CO2 container out to the left and price container back in from the right
+      co2Container.style.transform = "translateX(100%)"; // CO2 moves out of bounds
+      priceContainer.style.transform = "translateX(0)"; // Price comes back in
+    }
+
+    // Toggle visibility for the next cycle
+    isPriceVisible = !isPriceVisible;
+  }
+
+  // Set interval to swap containers every 5 seconds
+  setInterval(togglePrices, 10000); // 5000ms = 5 seconds
 
 
 //Start-Synchronisation nur einmal beim Laden
@@ -846,8 +930,5 @@ getCarbonIntensity()
 //Regelmäßige Updates laufen nur über updateSimulation()
 setInterval(updateSimulation, 1000);
 
-
-//TODO- spezifische use cases integrieren 
-//TODO- usability 
 //TODO- farbschema an website anpassen
 

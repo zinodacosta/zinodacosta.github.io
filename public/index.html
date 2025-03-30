@@ -74,7 +74,6 @@
             </div>
             <div id="co2-container">
               <p>CO2 Emission: <span id="carbon-intensity"></span></p>
-              <!-- TODO make carbon intensity swap out for electricity price after a few seconds-->
                <!-- TODO add buy/sell notification if electricity bought/sold-->
             </div>
           </div>
@@ -142,6 +141,8 @@
                 <option value="industrial">Industrial Hydrogen Production Plant</option>
               </select>
             </div>
+
+            <div id="bullet-points-container"></div>
             
             <div class="eco-system-container">
               <div class="eco-item" id="battery">
@@ -187,7 +188,7 @@
                   id="electrolyzer-power"
                   step="1"
                   min="100"
-                  max="10000"
+                  max="1000000"
                 />
                 <span id="electrolyzer-power-value">200</span>
                 <label for="electrolyzer-capacity"
@@ -220,7 +221,7 @@
                   id="fuelcell-power"
                   step="1"
                   min="100"
-                  max="10000"
+                  max="1000000"
                 />
                 <span id="fuelcell-power-value">200</span>
               </div>
@@ -243,7 +244,7 @@
                   id="PV-power"
                   step="1"
                   min="100"
-                  max="10000"
+                  max="1000000"
                 />
                 <span id="PV-power-value">200</span>
 

@@ -28,10 +28,12 @@ body {
     display: none;
 
 }
-
+.usecase-container{
+    display:block;
+}
 #myChart, #myChart2, #batteryChart, #hydrogenChart {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1165px;
     height: auto;
     max-height: 300px;
     margin-bottom: 20px;
@@ -132,22 +134,27 @@ footer {
     color: #495057;
 }
 
-#price-container {
-    padding: 0px; 
-    min-height: 50px;
-    overflow: visible; 
-  }
-  
-  #co2-price, #electricity-price {
+#price-container, #co2-container {
+    z-index: 1;
+    margin-top: 220px;
+    margin-left: 20px;
     position: absolute;
+    min-height: 50px;
     width: 100%;
-    transition: transform 1s ease-in-out;
-  }
-  
-  #electricity-price {
-    transform: translateY(100%);
-  }
+    top: 0;
+    left: 0;
+    overflow: hidden; /* Prevent content overflow */
+    transition: transform 3s ease-in-out; /* Smooth transition for both */
+}
 
+/* Ensure initial positioning */
+#price-container {
+    transform: translateX(0); /* Price container starts in view */
+}
+
+#co2-container {
+    transform: translateX(100%); /* CO2 container starts off-screen */
+}
 
 /* Media query for smaller screens */
 @media (max-width: 768px) {
@@ -266,10 +273,29 @@ footer {
     transform: scale(0.3) !important;
 }
 
+.use-case{
+    width: 80%;
+    margin-left: 30px;
+    font-size: 16px;
+    border: 1px solid #ccc !important;
+    text-align: center;
+    margin-top: 10px;
+    border-radius: 30px !important;
+}
 /* media end */
 
 }
-
+.use-case{
+    display: block;
+    background-color: rgb(243, 243, 243);
+    color: rgb(0, 0, 0);
+    border: 1px solid #000000;
+    padding: 10px 21px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+}
 #city-select{
     background-color: rgb(243, 243, 243);
     color: rgb(0, 0, 0);

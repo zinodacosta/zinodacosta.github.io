@@ -409,7 +409,7 @@ function updateSecondChart(graphDataArray) {
   });
 }
 
-//TODO make mobile dropdown menu responsive
+
 //Checkbox event listener
 document.querySelectorAll("input[type='checkbox']").forEach((checkbox) => {
   checkbox.addEventListener("change", () => {
