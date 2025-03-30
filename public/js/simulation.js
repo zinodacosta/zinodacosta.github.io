@@ -861,37 +861,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Buttons für die Simulation
 document.getElementById("convert-to-hydrogen").addEventListener("click", () => {
-  document.getElementById("simulation-state").innerHTML = " Hydrogen Mode ";
-  document.getElementById("electrolyzer-static-arrow").style.display = "none";
-  document.getElementById("electrolyzer-animated-arrow").style.display =
-    "block";
-  //Starte die Umwandlung im Elektrolyseur, wenn noch kein Intervall läuft
-  if (electrolyzerInterval === null) {
-    electrolyzerInterval = setInterval(() => {
-      hydro.produceHydrogen(); //Wasserstoffproduktion schrittweise
-    }, 1000); //Alle Sekunde
-    console.log("Electrolyzer started");
+  if(hydro.storage > 0){
+    document.getElementById("simulation-state").innerHTML = " Hydrogen Mode ";
+    document.getElementById("electrolyzer-static-arrow").style.display = "none";
+    document.getElementById("electrolyzer-animated-arrow").style.display =
+      "block";
+    //Starte die Umwandlung im Elektrolyseur, wenn noch kein Intervall läuft
+    if (electrolyzerInterval === null) {
+      electrolyzerInterval = setInterval(() => {
+        hydro.produceHydrogen(); //Wasserstoffproduktion schrittweise
+      }, 1000); //Alle Sekunde
+      console.log("Electrolyzer started");
+    }
   }
 });
 
 document
   .getElementById("convert-to-electricity")
   .addEventListener("click", () => {
-    document.getElementById("simulation-state").innerHTML = " Fuel Cell Mode ";
-    document.getElementById("fuelcell-static-arrow").style.display = "none";
-    document.getElementById("fuelcell-animated-arrow").style.display = "block";
-    //Starte die Umwandlung im Elektrolyseur, wenn noch kein Intervall läuft
-    if (fuelCellInterval === null) {
-      fuelCellInterval = setInterval(() => {
-        fc.produceElectricity(); //Wasserstoffproduktion schrittweise
-      }, 1000); //Alle Sekunde
-      console.log("Fuelcell started");
+    if(hydro.storage > 0){
+
+      document.getElementById("simulation-state").innerHTML = " Fuel Cell Mode ";
+      document.getElementById("fuelcell-static-arrow").style.display = "none";
+      document.getElementById("fuelcell-animated-arrow").style.display = "block";
+      //Starte die Umwandlung im Elektrolyseur, wenn noch kein Intervall läuft
+      if (fuelCellInterval === null) {
+        fuelCellInterval = setInterval(() => {
+          fc.produceElectricity(); //Wasserstoffproduktion schrittweise
+        }, 1000); //Alle Sekunde
+        console.log("Fuelcell started");
+      }
     }
+
   });
 
 document
   .getElementById("convert-to-hydrogen-stop")
   .addEventListener("click", () => {
+    
     document.getElementById("simulation-state").innerHTML = " ";
     document.getElementById("electrolyzer-static-arrow").style.display =
       "block";
