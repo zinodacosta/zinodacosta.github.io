@@ -21,7 +21,7 @@ InfluxDB has been implemented as database service, which will probably only be u
 
 API:
 
-The SMARD API (https://www.smard.de) is tricky to evaluate. The URL is filtered after power source, region and resolution, but the timestamp only changes every week at 11pm, meaning logic had to be implemented that dynamically shifts the timestamp after every week.
+The SMARD API (https://www.smard.de)is tricky to evaluate . The URL is filtered after power source, region and resolution, but the timestamp only changes every week at 11pm, meaning logic had to be implemented that dynamically shifts the timestamp after every week.
 
 Data delivered by the SMARD API can be filled with null entries, which have to be filtered out in order for the automated buy and sell logic to work as intended. Furthermore the price can drop down to a negative value, meaning electricity provider pay to sell their money resulting in a negative value, which has to be accounted for when buying, elsewise money will be deducted.
 
