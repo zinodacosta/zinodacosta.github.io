@@ -74,7 +74,6 @@
             </div>
             <div id="co2-container">
               <p>CO2 Emission: <span id="carbon-intensity"></span></p>
-               <!-- TODO add buy/sell notification if electricity bought/sold-->
             </div>
           </div>
 
@@ -83,6 +82,7 @@
 
       <div id="code-expanded" style="display: none">
         <div id="corner-content">
+
           <h2>Wholesale Price</h2>
           <!-- Canvas for Chart -->
           <canvas id="myChart" width="400" height="70"></canvas>
@@ -350,7 +350,10 @@
             <canvas id="batteryChart"></canvas>
             <h2>Hydrogen Storage</h2>
             <canvas id="hydrogenChart"></canvas>
+            <div id="notification" class="notification">1kW Electricity bought!</div>
+
           </div>
+
         </div>
       </div>
     </div>

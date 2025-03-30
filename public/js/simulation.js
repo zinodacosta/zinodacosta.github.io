@@ -1,11 +1,10 @@
 let electrolyzerInterval = null;
 let fuelCellInterval = null;
 let speedfactor = 1;
-let currentState = "";
 
 const apiKey = "e7c7b0c5b06544339dd03539253001";
 let city = "Frankfurt";
-
+//js for dropdown menu of location
 document.addEventListener("DOMContentLoaded", function () {
   const citySelect = document.getElementById("city-select");
   const locationDisplay = document.getElementById("location");
@@ -20,7 +19,27 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+let isNotificationVisible = false;
+//fade in notification signalizing trade of electricity
+function showNotification(message, type) {
+  if (isNotificationVisible) return;
 
+  isNotificationVisible = true;
+  const notification = document.getElementById("notification");
+
+  notification.textContent = message;
+  notification.style.backgroundColor = type === "buy" ? "green" : "red"; //green if buy else red
+  notification.style.display = "block";
+  notification.style.opacity = "1";
+
+  setTimeout(() => {
+    notification.style.opacity = "0";
+    setTimeout(() => {
+      notification.style.display = "none";
+      isNotificationVisible = false;
+    }, 500);
+  }, 3000);
+}
 
 export class photovoltaik {
   constructor() {
@@ -34,6 +53,7 @@ export class photovoltaik {
     this.power = amount;
   }
   async checkforSun() {
+    //check if api response shows local weather as sunny enough to charge pv
     document.getElementById("location").innerHTML = city;
     let sun = false;
     try {
@@ -186,13 +206,15 @@ export class electrolyzer {
         document.getElementById("hydrogen-level").innerHTML =
           this.storage.toFixed(2) + " g";
         let hydrogenPercentage = (this.storage / this.capacity) * 100;
-        if(document.getElementById("simulation-state").innerHTML === "Charge Mode"){
+        if (
+          document.getElementById("simulation-state").innerHTML ===
+          "Charge Mode"
+        ) {
           document.getElementById("simulation-state").innerHTML =
-          "Charge Mode + Hydrogen Mode ";
-        }
-        else{
+            "Charge Mode + Hydrogen Mode ";
+        } else {
           document.getElementById("simulation-state").innerHTML =
-          "Hydrogen Mode ";
+            "Hydrogen Mode ";
         }
         document.getElementById("hydrogen-gauge-percentage").innerHTML =
           hydrogenPercentage.toFixed(1) + " %";
@@ -238,6 +260,7 @@ const hydro = new electrolyzer();
 const fc = new fuelcell();
 
 async function fetchHydrogenLevel() {
+  //database fetch might get discontinued 
   try {
     const response = await fetch("http://localhost:3000/getHydrogenStatus");
     const data = await response.json();
@@ -280,18 +303,20 @@ async function getLastWholeSalePrice() {
   }
 }
 
-async function getCarbonIntensity(){
-  try{
+//API fetch for carbon intensity
+async function getCarbonIntensity() {
+  try {
     const response = await fetch("http://localhost:3000/get-carbon-intensity");
     const data = await response.json();
-    console.log("intensity",data);
+    console.log("intensity", data);
     document.getElementById("carbon-intensity").innerHTML = data + " gCO₂/kWh";
-  }catch(error){
+  } catch (error) {
     console.error("Error fetching Carbon Intensity", error);
     return null;
   }
 }
 
+//db fetch for battery levle
 async function fetchBatteryLevel() {
   try {
     const response = await fetch("http://localhost:3000/getBatteryStatus");
@@ -356,14 +381,14 @@ export class tradeElectricity {
 
   async buyElectricity() {
     if (this.money > 0) {
-      if (this.electricityPrice > 10) {
+      if (this.electricityPrice === null || isNaN(this.electricityPrice)) { //waiting for api to fetch price
+        await this.priceCheck();
+        if (this.electricityPrice === null || isNaN(this.electricityPrice))
+          return;
+      }  
         if (charge.storage + 1 <= charge.capacity) {
-          if (this.electricityPrice === null || isNaN(this.electricityPrice)) {
-            await this.priceCheck();
-            if (this.electricityPrice === null || isNaN(this.electricityPrice))
-              return;
-          }
           console.log("Bought 1kWh");
+          showNotification("1kW Electricity bought!", "buy");
           this.money -= this.electricityPrice * 0.1;
           charge.updateBatteryStorage(1);
           document.getElementById("money").innerHTML =
@@ -372,7 +397,6 @@ export class tradeElectricity {
           document.getElementById("battery-level").innerHTML =
             "Can't buy, battery is full";
         }
-      }
     }
   }
   async sellElectricity() {
@@ -383,6 +407,7 @@ export class tradeElectricity {
           return;
       }
       console.log("Sold 1kWh");
+      showNotification("1kW Electricity sold!", "sell");
       this.money += this.electricityPrice * 0.1;
       charge.updateBatteryStorage(-1);
       document.getElementById("money").innerHTML =
@@ -451,6 +476,7 @@ async function updateSimulation() {
   if (trade.electricityPrice < 80) {
     console.log("Electricity Price under Threshold: Buying Electricity");
     await trade.buyElectricity();
+
     if (trade.electricityPrice > 80 && trade.electricityPrice < 150) {
       console.log("Electricity Price in acceptable range");
       await hydro.produceHydrogen();
@@ -480,7 +506,6 @@ async function updateSimulation() {
     "--after-top",
     (hydro.storage / hydro.capacity) * 100 * -1 - 15 + "%"
   );
-
 }
 
 function resetSimulation() {
@@ -642,9 +667,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const usecase = document.getElementById("use-case");
-  
-  usecase.addEventListener("change", function () { // Update values when selection changes
-    const bulletPointsContainer = document.getElementById("bullet-points-container");
+
+  usecase.addEventListener("change", function () {
+    // Update values when selection changes
+    const bulletPointsContainer = document.getElementById(
+      "bullet-points-container"
+    );
     bulletPointsContainer.innerHTML = "";
 
     let bulletPoints = [];
@@ -654,11 +682,10 @@ document.addEventListener("DOMContentLoaded", function () {
         "A house powered by solar panels, with a battery for short-term storage and a hydrogen system for long-term energy storage.",
 
         "During the day, excess solar power is used to generate hydrogen via electrolysis.",
-        
-        "At night or on cloudy days, the fuel cell converts hydrogen back into electricity.",
-        
-        "The system sells excess electricity to the grid when prices are high and buys when prices are low."
 
+        "At night or on cloudy days, the fuel cell converts hydrogen back into electricity.",
+
+        "The system sells excess electricity to the grid when prices are high and buys when prices are low.",
       ];
       resetSimulation();
       pv.updatePVPower(10000);
@@ -698,10 +725,8 @@ document.addEventListener("DOMContentLoaded", function () {
         "A small community with unreliable grid access uses solar panels, batteries, and hydrogen storage for 24/7 power.",
 
         "The system optimizes energy flow, prioritizing battery storage for short-term demand and hydrogen for seasonal storage.",
-        
-        "Villagers share a common energy trading system, where surplus power is bought and sold dynamically."
-        
 
+        "Villagers share a common energy trading system, where surplus power is bought and sold dynamically.",
       ];
       resetSimulation();
       pv.updatePVPower(200000);
@@ -741,9 +766,8 @@ document.addEventListener("DOMContentLoaded", function () {
         "A charging station for electric vehicles powered by solar energy, with a battery for quick power delivery and hydrogen for backup.",
 
         "When there’s surplus solar power, it’s used to generate hydrogen instead of wasting energy.",
-        
-        "The station dynamically adjusts pricing based on energy availability and grid prices."
-      
+
+        "The station dynamically adjusts pricing based on energy availability and grid prices.",
       ];
       resetSimulation();
       pv.updatePVPower(500000);
@@ -779,14 +803,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (usecase.value === "industrial") {
-
       bulletPoints = [
         "A factory with high energy demand uses solar power to generate hydrogen, which is stored for later use in production or fuel cells.",
 
         "When electricity prices are low, the factory buys from the grid; when high, it switches to stored hydrogen.",
-        
-        "The plant sells excess hydrogen or electricity back to the grid for profit."
-      
+
+        "The plant sells excess hydrogen or electricity back to the grid for profit.",
       ];
       resetSimulation();
       pv.updatePVPower(1000000);
@@ -820,10 +842,10 @@ document.addEventListener("DOMContentLoaded", function () {
       fuelcellEfficiencyValueDisplay.textContent = 60 + "%";
       fuelcellEfficiencySlider.value = 60;
     }
-    
+
     const ul = document.createElement("ul");
 
-    bulletPoints.forEach(point => {
+    bulletPoints.forEach((point) => {
       const li = document.createElement("li");
       li.textContent = point;
       ul.appendChild(li);
@@ -831,13 +853,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Append the bullet points to the container
     bulletPointsContainer.appendChild(ul);
-
   });
 
   // Trigger change event on page load to set initial values
   usecase.dispatchEvent(new Event("change"));
-
-
 });
 
 //Buttons für die Simulation
@@ -898,37 +917,35 @@ document
     }
   });
 
-  const priceContainer = document.getElementById("price-container");
-  const co2Container = document.getElementById("co2-container");
+const priceContainer = document.getElementById("price-container");
+const co2Container = document.getElementById("co2-container");
 
-  let isPriceVisible = true;
+let isPriceVisible = true;
 
-  function togglePrices() {
-    if (isPriceVisible) {
-      // Slide price container out to the left and CO2 container in from the right
-      priceContainer.style.transform = "translateX(-100%)"; // Price moves out of bounds
-      co2Container.style.transform = "translateX(0)"; // CO2 comes into view
-    } else {
-      // Slide CO2 container out to the left and price container back in from the right
-      co2Container.style.transform = "translateX(100%)"; // CO2 moves out of bounds
-      priceContainer.style.transform = "translateX(0)"; // Price comes back in
-    }
-
-    // Toggle visibility for the next cycle
-    isPriceVisible = !isPriceVisible;
+function togglePrices() {
+  if (isPriceVisible) {
+    // Slide price container out to the left and CO2 container in from the right
+    priceContainer.style.transform = "translateX(-100%)"; // Price moves out of bounds
+    co2Container.style.transform = "translateX(0)"; // CO2 comes into view
+  } else {
+    // Slide CO2 container out to the left and price container back in from the right
+    co2Container.style.transform = "translateX(100%)"; // CO2 moves out of bounds
+    priceContainer.style.transform = "translateX(0)"; // Price comes back in
   }
 
-  // Set interval to swap containers every 5 seconds
-  setInterval(togglePrices, 10000); // 5000ms = 5 seconds
+  // Toggle visibility for the next cycle
+  isPriceVisible = !isPriceVisible;
+}
 
+// Set interval to swap containers every 5 seconds
+setInterval(togglePrices, 10000); // 5000ms = 5 seconds
 
 //Start-Synchronisation nur einmal beim Laden
 fetchBatteryLevel();
 fetchHydrogenLevel();
-getCarbonIntensity()
+getCarbonIntensity();
 
 //Regelmäßige Updates laufen nur über updateSimulation()
 setInterval(updateSimulation, 1000);
 
 //TODO- farbschema an website anpassen
-
