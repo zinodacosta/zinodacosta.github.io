@@ -75,6 +75,7 @@
             <div id="co2-container">
               <p>CO2 Emission: <span id="carbon-intensity"></span></p>
               <!-- TODO make carbon intensity swap out for electricity price after a few seconds-->
+               <!-- TODO add buy/sell notification if electricity bought/sold-->
             </div>
           </div>
 
@@ -130,6 +131,18 @@
 
             <!-- Hydrogen Eco System Section -->
             <h2>Hydrogen Eco Simulation</h2>
+
+            <h3>Select Use Case: </h3>
+
+            <div class="usecase-container">
+              <select id="use-case" class="use-case">
+                <option value="offgrid">Off-Grid Sustainable Home</option>
+                <option value="microgrid">Microgrid for a Remote Village</option>
+                <option value="evcharge">EV Charging Station with Renewable Energy</option>
+                <option value="industrial">Industrial Hydrogen Production Plant</option>
+              </select>
+            </div>
+            
             <div class="eco-system-container">
               <div class="eco-item" id="battery">
                 <h3>Battery</h3>
