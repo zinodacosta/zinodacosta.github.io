@@ -61,7 +61,6 @@ export class photovoltaik {
         `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`
       );
       const data = await response.json();
-      console.log(data);
       const cloudiness = data.current.cloud;
       const daytime = data.current.is_day;
       if (daytime) {
@@ -361,7 +360,7 @@ export class tradeElectricity {
     document.getElementById("current-price").innerHTML = this.electricityPrice;
     const buyingPriceElement = document.getElementById("buying-price");
     if (buyingPriceElement) {
-      if (this.electricityPrice > 150) {
+      if (this.electricityPrice > 100) {
         buyingPriceElement.innerHTML =
           "Current Price is over threshold -> sell electricity";
         if (charge.storage != 0) {
@@ -433,6 +432,7 @@ async function updateSimulation() {
     }
   }
 
+  /**
   //Send battery level to server
   try {
     const response = await fetch("http://localhost:3000/saveBatteryStatus", {
@@ -451,7 +451,8 @@ async function updateSimulation() {
     console.error("Error sending battery level to server:", error);
   }
   //Send hydrogen level to server
-  try {
+
+   try {
     const response = await fetch("http://localhost:3000/saveHydrogenStatus", {
       method: "POST",
       headers: {
@@ -467,6 +468,8 @@ async function updateSimulation() {
   } catch (error) {
     console.error("Error sending hydrogen level to server:", error);
   }
+   */
+
 
   //Automate trade logic
   if (trade.electricityPrice > 150) {
@@ -538,7 +541,6 @@ function resetSimulation() {
 
 //Slider für Simulation
 document.addEventListener("DOMContentLoaded", function () {
-  fetchHydrogenLevel();
   const sellButton = document.getElementById("sell-button");
   const buyButton = document.getElementById("buy-button");
   const resetButton = document.getElementById("reset");
@@ -949,8 +951,6 @@ function togglePrices() {
 setInterval(togglePrices, 10000); // 5000ms = 5 seconds
 
 //Start-Synchronisation nur einmal beim Laden
-fetchBatteryLevel();
-fetchHydrogenLevel();
 getCarbonIntensity();
 
 //Regelmäßige Updates laufen nur über updateSimulation()

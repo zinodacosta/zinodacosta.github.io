@@ -1,11 +1,11 @@
 import { InfluxDB, Point } from "@influxdata/influxdb-client";
 import dotenv from "dotenv";
 dotenv.config({ path: "token.env" });
-
+/** 
 const token = process.env.INFLUXDB_TOKEN;
 if (!token) {
   console.error("INFLUXDB_TOKEN is not set");
-  process.exit(1);
+ process.exit(1);
 }
 
 const org = "your-org";
@@ -13,7 +13,7 @@ const client = new InfluxDB({
   url: "https://eu-central-1-1.aws.cloud2.influxdata.com",
   token,
 });
-
+*/
 //save battery
 export async function saveBatteryStatus(batteryLevel) {
   const point = new Point("battery").floatField("level", batteryLevel);

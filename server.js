@@ -3,14 +3,7 @@ import fetch from "node-fetch"; //http req lib
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs"; //read and write files
-import {
-  saveBatteryStatus,
-  getLastBatteryStatus,
-  saveHydrogenStatus,
-  getLastHydrogenStatus,
-} from "./public/js/db.js"; //Verwende import
-import { saveWholeSalePrice } from "./public/js/db.js";
-import { getLastWholeSalePrice } from "./public/js/db.js";
+
 
 //Correct `__dirname` for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -171,69 +164,49 @@ app.get("/get-carbon-intensity", async (req, res) => {
 });
 
 //function to fetch and save the wholesale price
-async function fetchAndSaveWholesalePrice() {
+let latestWholesalePrice = { timestamp: null, value: null };
+
+async function fetchWholesalePrice() {
   const adjustedTimestamp = getNextDayTimestamp();
-  console.log("Current Timestamp:", adjustedTimestamp);
   const currentTimestamp = getCurrentHourTimestamp();
 
   try {
-    //fetch the wholesale price data from the external API
     const response = await fetch(
       `https://www.smard.de/app/chart_data/4169/DE/4169_DE_hour_${adjustedTimestamp}.json`
     );
+
     if (!response.ok) {
       throw new Error("Failed to fetch wholesale price from the external API");
     }
 
-    //extract the JSON data from the response
     const data = await response.json();
-
-    //check if the response has the expected structure
     if (data && data.series && Array.isArray(data.series)) {
-      //extract the series data from the API response
-      const series = data.series;
+      const validEntries = data.series.filter((entry) => entry[1] !== null);
+      let lastEntry = validEntries.find((entry) => entry[0] === currentTimestamp);
 
-      //filter out the entries with null values
-      const validEntries = series.filter((entry) => entry[1] !== null); //remove entries with null values
-
-      //check if there are any valid entries
-      if (validEntries.length === 0) {
-        throw new Error("No valid price data found for the current timestamp.");
-      }
-
-      //search for the entry with the current timestamp
-      let lastEntry = validEntries.find(
-        (entry) => entry[0] === currentTimestamp
-      );
-
-      //if the entry with the current timestamp is not found, use the last valid entry
       if (!lastEntry) {
-        lastEntry = validEntries[validEntries.length - 1]; //use last valid entry
+        lastEntry = validEntries[validEntries.length - 1];
       }
 
-      const price = lastEntry[1]; //value of the last valid entry
-      const priceTimestamp = lastEntry[0]; //timestamp of the last valid entry
+      latestWholesalePrice = {
+        timestamp: lastEntry[0],
+        value: lastEntry[1],
+      };
 
-      //save in db
-      await saveWholeSalePrice(priceTimestamp, price);
     } else {
-      throw new Error("API response does not have a valid 'series' array");
+      throw new Error("API response structure invalid.");
     }
   } catch (error) {
-    console.error("Error fetching or saving wholesale price:", error);
-    throw new Error("Error saving price");
+    console.error("Error fetching wholesale price:", error);
   }
 }
 
-app.get("/get-wholesale-price", async (req, res) => {
-  try {
-    //get the last wholesale price from the database
-    const priceData = await getLastWholeSalePrice();
-    res.json(priceData); //send the value as JSON
-  } catch (error) {
-    console.error("Error fetching wholesale price:", error);
-    res.status(500).json({ error: "Error fetching wholesale price" });
+app.get("/get-wholesale-price", (req, res) => {
+  if (latestWholesalePrice.timestamp === null) {
+    return res.status(404).json({ error: "No wholesale price available yet" });
   }
+
+  res.json(latestWholesalePrice);
 });
 
 app.post("/saveWholeSalePrice", async (req, res) => {
@@ -328,6 +301,7 @@ app.get("/", (req, res) => {
 });
 
 //get last battery status
+/**
 app.get("/getBatteryStatus", async (req, res) => {
   try {
     const lastBatteryStatus = await getLastBatteryStatus();
@@ -340,8 +314,11 @@ app.get("/getBatteryStatus", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+ */
+
 
 //get last hydrogen status
+/**
 app.get("/getHydrogenStatus", async (req, res) => {
   try {
     const lastHydrogenStatus = await getLastHydrogenStatus();
@@ -354,6 +331,8 @@ app.get("/getHydrogenStatus", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+ */
+
 
 //Start server
 app.listen(port, async () => {
@@ -361,7 +340,7 @@ app.listen(port, async () => {
 
   //price check on startup and save to db
   try {
-    await fetchAndSaveWholesalePrice(); 
+    await fetchWholesalePrice(); 
     await fetchCarbonIntensity();
   } catch (error) {
     console.error("Error saving price on server startup:", error);
