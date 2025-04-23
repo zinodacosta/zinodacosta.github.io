@@ -61,10 +61,11 @@ export class photovoltaik {
         `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`
       );
       const data = await response.json();
+      console.log(data);
       const cloudiness = data.current.cloud;
       const daytime = data.current.is_day;
       if (daytime) {
-        if (cloudiness < 20) {
+        if (cloudiness < 105) {
           document.getElementById("sun").textContent =
             "Sun is shining. Charge Mode";
           document.getElementById("simulation-state").innerHTML =
@@ -380,7 +381,7 @@ export class tradeElectricity {
   }
 
   async buyElectricity() {
-    if (this.money > 0) {
+    if (this.money < 0) {
       if (this.electricityPrice === null || isNaN(this.electricityPrice)) { //waiting for api to fetch price
         await this.priceCheck();
         if (this.electricityPrice === null || isNaN(this.electricityPrice))

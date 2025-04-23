@@ -91,7 +91,7 @@ function getNextDayTimestamp() {
   today.setUTCHours(0, 0, 0, 0); //Set time to 00:00 UTC
   today.setUTCDate(today.getUTCDate() - counter); //Move to the days before
   const nextDayTimestamp = today.getTime(); //Get timestamp in milliseconds
-  const adjustedTimestamp = nextDayTimestamp - 3600000; //Adjust timestamp by 1 hour
+  const adjustedTimestamp = nextDayTimestamp - 7200000; //Adjust timestamp by 1 hour
   return adjustedTimestamp;
 }
 
@@ -142,7 +142,7 @@ function getCurrentHourTimestamp() {
 
   //get timestamp in milliseconds
   const roundedTimestamp = now.getTime();
-  console.log("Current Timestamp:", roundedTimestamp);
+
   return roundedTimestamp;
 }
 async function fetchCarbonIntensity() {
@@ -173,6 +173,7 @@ app.get("/get-carbon-intensity", async (req, res) => {
 //function to fetch and save the wholesale price
 async function fetchAndSaveWholesalePrice() {
   const adjustedTimestamp = getNextDayTimestamp();
+  console.log("Current Timestamp:", adjustedTimestamp);
   const currentTimestamp = getCurrentHourTimestamp();
 
   try {
